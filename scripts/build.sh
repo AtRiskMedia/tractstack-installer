@@ -1,11 +1,9 @@
 #!/bin/bash
 
 SITENAME="tractstack"
-USER="tractstack"
 WWW_TRACTSTACK="tractstack"
 WWW_STORYKEEP="storykeep"
 NOW=$(date +%s)
-MORE=("atriskmedia-dot-com")
 RAN=false
 
 blue='\033[0;34m'
@@ -24,29 +22,35 @@ echo -e "${reset}All-in-one customer journey analytics web funnels builder"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
-TARGET=$(cat /home/${USER}/releases/watch/build.lock)
+TARGET=$(cat ~/releases/watch/build.lock)
 echo $TARGET
+
+if grep -q INITIALIZE_SHOPIFY=true ~/src/gatsby-starter-tractstack/.env.production; then
+	SHOPIFY="1"
+else
+	SHOPIFY="0"
+fi
 
 if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1" = "all" ]; then
 	RAN=true
 	echo ""
 	echo -e "building your ${white}Story Keep (backend)${reset}"
-	cd /home/"$USER"/src/gatsby-starter-storykeep/
+	cd ~/src/gatsby-starter-storykeep/
 	git pull
 	yarn install
 	gatsby clean
 	gatsby build
-	cd /home/"$USER"/releases
-	target=$(readlink -e /home/$USER/releases/storykeep/current)
-	mkdir -p /home/"$USER"/releases/storykeep/"$NOW"
-	cd /home/"$USER"/releases/storykeep/"$NOW"
-	cp -rp /home/"$USER"/src/gatsby-starter-storykeep/public/* .
-	ln -sf /home/"$USER"/srv/tractstack-concierge/api/
-	ln -sf /home/"$USER"/srv/public_html/drupal/web/ d
-	cd /home/"$USER"/releases/storykeep
+	cd ~/releases
+	target=$(readlink -e ~/releases/storykeep/current)
+	mkdir -p ~/releases/storykeep/"$NOW"
+	cd ~/releases/storykeep/"$NOW"
+	cp -rp ~/src/gatsby-starter-storykeep/public/* .
+	ln -sf ~/srv/tractstack-concierge/api/
+	ln -sf ~/srv/public_html/drupal/web/ d
+	cd ~/releases/storykeep
 	rm -rf $target
 	ln -sf "$NOW" current
-	cd /home/"$USER"/src/gatsby-starter-storykeep/
+	cd ~/src/gatsby-starter-storykeep/
 	echo -e "${blue}done.${reset}"
 fi
 
@@ -54,52 +58,43 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	RAN=true
 	echo ""
 	echo -e "building ${white}$SITENAME (frontend)${reset}"
-	cd /home/"$USER"/src/gatsby-starter-tractstack/
+	if [ "$SHOPIFY" -eq "1" ]; then
+		cp -rp ~/src/gatsby-starter-tractstack/integrations/shopify/hooks/* ~/src/gatsby-starter-tractstack/src/hooks/
+		cp -rp ~/src/gatsby-starter-tractstack/integrations/shopify/pages/* ~/src/gatsby-starter-tractstack/src/pages/
+		cp -rp ~/src/gatsby-starter-tractstack/integrations/shopify/shopify-components ~/src/gatsby-starter-tractstack/src/
+		cp ~/src/gatsby-starter-tractstack/integrations/shopify/gatsby-config.ts ~/src/gatsby-starter-tractstack/
+	else
+		cp ~/src/gatsby-starter-tractstack/integrations/no-shopify/gatsby-config.ts ~/src/gatsby-starter-tractstack/
+		cp -rp ~/src/gatsby-starter-tractstack/integrations/no-shopify/shopify-components ~/src/gatsby-starter-tractstack/src/
+		rm ~/src/gatsby-starter-tractstack/src/hooks/use-product-data.tsx
+		rm ~/src/gatsby-starter-tractstack/src/pages/cart.tsx
+		rm ~/src/gatsby-starter-tractstack/src/pages/products/{shopifyProduct.handle}.tsx
+		rm ~/src/gatsby-starter-tractstack/src/shopify-components/AddToCart.tsx
+		rm ~/src/gatsby-starter-tractstack/src/shopify-components/BuyNow.tsx
+		rm ~/src/gatsby-starter-tractstack/src/shopify-components/LineItem.tsx
+	fi
+	cd ~/src/gatsby-starter-tractstack/
 	git pull
 	yarn install
 	gatsby clean
 	gatsby build
-	cd /home/"$USER"/releases
-	target=$(readlink -e /home/$USER/releases/tractstack/current)
-	mkdir -p /home/"$USER"/releases/tractstack/"$NOW"
-	cd /home/"$USER"/releases/tractstack/"$NOW"
-	cp -rp /home/"$USER"/src/gatsby-starter-tractstack/public/* .
-	ln -sf /home/"$USER"/srv/tractstack-concierge/api/
-	ln -sf /home/"$USER"/srv/public_html/drupal/web/ d
-	cd /home/"$USER"/releases/tractstack
+	cd ~/releases
+	target=$(readlink -e ~/releases/tractstack/current)
+	mkdir -p ~/releases/tractstack/"$NOW"
+	cd ~/releases/tractstack/"$NOW"
+	cp -rp ~/src/gatsby-starter-tractstack/public/* .
+	ln -sf sitemap-index.xml sitemap.xml
+	ln -sf ~/srv/tractstack-concierge/api/
+	ln -sf ~/srv/public_html/drupal/web/ d
+	cd ~/releases/tractstack
 	rm -rf $target
 	ln -sf "$NOW" current
-	cd /home/"$USER"/src/gatsby-starter-tractstack/
+	cd ~/src/gatsby-starter-tractstack/
 	echo -e "${blue}done.${reset}"
 fi
-
-for value in "${MORE[@]}"; do
-	if [ "$value" == "$TARGET" ] || [ "$TARGET" == "more" ] || [ "$value" == "$1" ] || [ "$1" == "more" ]; then
-		RAN=true
-		echo -e "building ${white}$value (special)${reset}"
-		cd /home/"$USER"/src/"$value"/
-		cp /home/"$USER"/src/gatsby-starter-tractstack/tailwind.whitelist .
-		git pull
-		yarn install
-		gatsby clean
-		gatsby build
-		cd /home/"$USER"/releases
-		target=$(readlink -e /home/$USER/releases/"$value"/current)
-		mkdir -p /home/"$USER"/releases/"$value"/"$NOW"
-		cd /home/"$USER"/releases/"$value"/"$NOW"
-		cp -rp /home/"$USER"/src/"$value"/public/* .
-		ln -sf /home/"$USER"/srv/tractstack-concierge/api/
-		ln -sf /home/"$USER"/srv/public_html/drupal/web/ d
-		cd /home/"$USER"/releases/"$value"
-		rm -rf $target
-		ln -sf "$NOW" current
-		cd /home/"$USER"/src/"$value"/
-		echo -e "${blue}done.${reset}"
-	fi
-done
 
 if [ "$RAN" = false ]; then
 	echo Usage: ./build {target} where target = front, back, all or *key
 else
-	rm /home/"$USER"/releases/watch/build.lock 2>/dev/null || true
+	rm ~/releases/watch/build.lock 2>/dev/null || true
 fi

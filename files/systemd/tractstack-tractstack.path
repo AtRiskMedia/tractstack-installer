@@ -1,0 +1,9 @@
+[Unit]
+Description="Trigger build process for Tract Stack"
+
+[Path]
+PathModified=/home/ZZZZZ/releases/watch
+Unit=t8k-ZZZZZ.service
+
+[Install]
+WantedBy=multi-user.target

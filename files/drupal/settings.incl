@@ -1,0 +1,5 @@
+
+$settings['trusted_host_patterns'] = [
+  '^ZZZZZ\.tractstack\.com$',
+  '^storykeep\.ZZZZZ\.tractstack\.com$',
+];
