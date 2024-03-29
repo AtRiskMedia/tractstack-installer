@@ -14,7 +14,7 @@ blue='\033[0;34m'
 brightblue='\033[1;34m'
 white='\033[1;37m'
 reset='\033[0m'
-
+echo "-$NAME-"
 echo -e "${brightblue}"
 echo -e "${brightblue}  _                ${blue}  _       _             _     "
 echo -e "${brightblue} | |_ _ __ __ _  ___| |_ ${blue}___| |_ __ _  ___| | __ "
@@ -26,15 +26,15 @@ echo -e "${reset}All-in-one customer journey analytics web funnels builder"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
-if [ -d /home/"$NAME" ]; then
-	echo User "$NAME" already exists.
+if [ -z "$NAME" ]; then
+	echo To install Tract Stack provide linux user name
+	echo Usage: sudo ./tractstack-install.sh username
 	echo ""
 	exit 1
 fi
 
-if [ "$NAME" = "" ]; then
-	echo To install Tract Stack provide linux user name
-	echo Usage: sudo ./tractstack-install.sh username
+if [ -d /home/"$NAME" ]; then
+	echo User "$NAME" already exists.
 	echo ""
 	exit 1
 fi
