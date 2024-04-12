@@ -112,7 +112,7 @@ else
 	chown t8k:"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/web.config
 	chmod 640 /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/private.key
 	chmod 640 /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/public.key
-	cat ../files/drupal/settings.incl >>/home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
+	cat ../files/drupal/"$TARGET".settings.incl >>/home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
 fi
 
@@ -190,8 +190,13 @@ cat ../files/logrotate/nginx >>/etc/logrotate.d/nginx."$NAME"
 
 echo ""
 echo Add systemd path unit - build watch
-cp ../files/systemd/tractstack-tractstack.path /etc/systemd/system/t8k-"$NAME".path
-cp ../files/systemd/tractstack-tractstack.service /etc/systemd/system/t8k-"$NAME".service
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	cp ../files/systemd/tractstack-tractstack.path /etc/systemd/system/t8k-"$NAME".path
+	cp ../files/systemd/tractstack-tractstack.service /etc/systemd/system/t8k-"$NAME".service
+else
+	cp ../files/systemd/"$TARGET".tractstack-tractstack.path /etc/systemd/system/t8k-"$NAME".path
+	cp ../files/systemd/"$TARGET".tractstack-tractstack.service /etc/systemd/system/t8k-"$NAME".service
+fi
 sed -i -e "$SED" /etc/systemd/system/t8k-"$NAME".path
 sed -i -e "$SED" /etc/systemd/system/t8k-"$NAME".service
 systemctl enable t8k-"$NAME".path

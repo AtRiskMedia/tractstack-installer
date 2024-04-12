@@ -1,0 +1,6 @@
+[Unit]
+Description="Run tractstack build process"
+
+[Service]
+User=t8k
+ExecStart=/home/t8k/features/features_ZZZZZ/scripts/build.sh
