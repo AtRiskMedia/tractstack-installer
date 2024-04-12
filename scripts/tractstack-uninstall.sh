@@ -1,6 +1,20 @@
 #!/bin/bash
 
-NAME=$1
+TARGET=$2
+if [[ -z "$TARGET" ]]; then
+	NAME=$1
+	INSTALL_USER=$1
+elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
+	NAME="$2"_"$1"
+	INSTALL_USER="t8k"
+else
+	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
+	echo Usage: sudo ./tractstack-uninstall.sh username target
+	echo ELSE for user install... Usage: sudo ./tractstack-uninstall.sh username
+	echo ""
+	exit 1
+fi
+
 DB_NAME=t8k_"$NAME"
 CONCIERGE_DB_NAME=concierge_"$NAME"
 
@@ -16,19 +30,30 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}All-in-one customer journey analytics web funnels builder"
+echo -e "${reset}All-in-one publishing platform to grow your content into a business"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
-if [ ! -d /home/"$NAME" ]; then
-	echo User "$NAME" does not already exist.
-	echo ""
-	exit 1
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	if [ ! -d /home/"$NAME" ]; then
+		echo User "$NAME" does not already exist.
+		echo ""
+		exit 1
+	fi
+else
+	if [ ! -d /home/t8k/"$TARGET"/"$NAME" ]; then
+		echo User "$NAME" does not already exist in "$TARGET".
+		echo ""
+		exit 1
+	fi
 fi
 
 if [ "$NAME" = "" ]; then
 	echo To uninstall Tract Stack provide linux user name
 	echo Usage: sudo ./tractstack-uninstall.sh username
+	echo ""
+	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
+	echo Usage: sudo ./tractstack-uninstall.sh username target
 	echo ""
 	exit 1
 fi
@@ -48,26 +73,47 @@ echo Dropping Concierge database: concierge_"$NAME"
 mysql -e "DROP DATABASE ${CONCIERGE_DB_NAME};" >/dev/null 2>&1
 mysql -e "FLUSH PRIVILEGES;" >/dev/null 2>&1
 
-echo ""
-echo Removing Tract Stack for user: "$NAME"
-deluser "$NAME"
-rm -rf /home/"$NAME"
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	echo ""
+	echo Removing Tract Stack for user: "$NAME"
+	deluser "$NAME"
+	rm -rf /home/"$NAME"
+else
+	echo ""
+	echo Removing Tract Stack for user: "$NAME" in "$TARGET"
+	rm -rf /home/t8k/"$TARGET"/"$NAME"
+fi
 
 #echo ""
 #echo Remove certificate
 #rm -rf /etc/letsencrypt/*/"$NAME".tractstack.com*
 
-echo ""
-echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
-rm /etc/nginx/sites-available/storykeep."$NAME".conf
-rm /etc/nginx/sites-available/t8k."$NAME".conf
-rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
-rm /etc/nginx/sites-enabled/t8k."$NAME".conf
-if ! nginx -t 2>/dev/null; then
+if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo ""
-	echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
+	echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
+	rm /etc/nginx/sites-available/storykeep."$NAME".conf
+	rm /etc/nginx/sites-available/t8k."$NAME".conf
+	rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
+	rm /etc/nginx/sites-enabled/t8k."$NAME".conf
+	if ! nginx -t 2>/dev/null; then
+		echo ""
+		echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
+		echo ""
+		exit 1
+	fi
+else
 	echo ""
-	exit 1
+	echo Removing nginx config for "$TARGET"."$1".tractstack.com and "$TARGET".storykeep."$1".tractstack.com
+	rm /etc/nginx/sites-available/"$TARGET".storykeep."$1".conf
+	rm /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
+	rm /etc/nginx/sites-enabled/"$TARGET".storykeep."$1".conf
+	rm /etc/nginx/sites-enabled/"$TARGET".t8k."$1".conf
+	if ! nginx -t 2>/dev/null; then
+		echo ""
+		echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
+		echo ""
+		exit 1
+	fi
 fi
 service nginx reload
 

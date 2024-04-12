@@ -1,12 +1,23 @@
 #!/bin/bash
 
-NAME="$USER"
-DB_NAME=t8k_"$USER"
+TARGET=$4
+if [[ -z "$TARGET" ]]; then
+	NAME="$USER"
+	DB_NAME=t8k_"$USER"
+	cd ~/srv/public_html
+else
+	echo $3
+	NAME=$3
+	DB_NAME=t8k_"$NAME"
+	echo "$DBNAME"
+	echo "$TARGET"
+	cd ~/"$TARGET"/"$NAME"/srv/public_html
+fi
+
 DB_PASSWORD=$1
 ACCOUNT_PASSWORD=$2
 
 echo Installing Drupal CMS
-cd ~/srv/public_html
 composer create-project drupal/recommended-project drupal
 cd drupal
 composer require --dev drush/drush

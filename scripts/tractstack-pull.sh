@@ -1,6 +1,13 @@
 #!/bin/bash
 
-NAME=$1
+TARGET=$2
+if [[ -z "$TARGET" ]]; then
+	NAME=$1
+	INSTALL_USER=$1
+elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
+	NAME="$2"_"$1"
+	INSTALL_USER="t8k"
+fi
 
 blue='\033[0;34m'
 brightblue='\033[1;34m'
@@ -14,14 +21,22 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}All-in-one customer journey analytics web funnels builder"
+echo -e "${reset}All-in-one publishing platform to grow your content into a business"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
-if [ ! -d /home/"$NAME" ]; then
-	echo User "$NAME" not found.
-	echo ""
-	exit 1
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	if [ ! -d /home/"$NAME" ]; then
+		echo User "$NAME" does not already exist.
+		echo ""
+		exit 1
+	fi
+else
+	if [ ! -d /home/t8k/"$TARGET"/"$NAME" ]; then
+		echo User "$NAME" does not already exist in "$TARGET".
+		echo ""
+		exit 1
+	fi
 fi
 
 if [ "$NAME" = "" ]; then
@@ -39,6 +54,12 @@ fi
 
 echo ""
 echo Upgrading Tract Stack as user: "$NAME"
-sudo -H -u "$NAME" bash -c 'cd ~/src/gatsby-starter-storykeep; git pull'
-sudo -H -u "$NAME" bash -c 'cd ~/src/gatsby-starter-tractstack; git pull'
-sudo -H -u "$NAME" bash -c 'cd ~/srv/tractstack-concierge; git pull'
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	sudo -H -u "$NAME" bash -c 'cd ~/src/gatsby-starter-storykeep; git pull'
+	sudo -H -u "$NAME" bash -c 'cd ~/src/gatsby-starter-tractstack; git pull'
+	sudo -H -u "$NAME" bash -c 'cd ~/srv/tractstack-concierge; git pull'
+else
+	sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/src/gatsby-starter-storykeep; git pull'
+	sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/src/gatsby-starter-tractstack; git pull'
+	sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/srv/tractstack-concierge; git pull'
+fi
