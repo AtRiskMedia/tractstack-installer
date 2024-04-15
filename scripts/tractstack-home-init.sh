@@ -21,7 +21,8 @@ if [[ -z "$TARGET" ]]; then
 	echo Cloning repos.
 	cd ~/src/
 	git clone https://github.com/AtRiskMedia/gatsby-starter-storykeep.git
-	git clone https://github.com/AtRiskMedia/gatsby-starter-tractstack.git
+	#git clone https://github.com/AtRiskMedia/gatsby-starter-tractstack.git
+	git clone https://github.com/AtRiskMedia/tractstack-frontend.git
 	cd ~/srv/
 	git clone https://github.com/AtRiskMedia/tractstack-concierge.git
 	echo Installing Concierge
@@ -50,7 +51,8 @@ elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 	echo Cloning repos.
 	cd ~/"$TARGET"/"$NAME"/src
 	git clone https://github.com/AtRiskMedia/gatsby-starter-storykeep.git
-	git clone https://github.com/AtRiskMedia/gatsby-starter-tractstack.git
+	#git clone https://github.com/AtRiskMedia/gatsby-starter-tractstack.git
+	git clone https://github.com/AtRiskMedia/tractstack-frontend.git
 	cd ~/"$TARGET"/"$NAME"/srv
 	git clone https://github.com/AtRiskMedia/tractstack-concierge.git
 	echo Installing Concierge

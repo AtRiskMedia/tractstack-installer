@@ -4,13 +4,16 @@ TARGET=$4
 if [[ -z "$TARGET" ]]; then
 	NAME="$USER"
 	DB_NAME=t8k_"$USER"
+	SED_OAUTH='/^public_key\|^private_key/ s/tractstack/'"$NAME"'/g'
 	cd ~/srv/public_html
 else
 	echo $3
 	NAME=$3
 	DB_NAME=t8k_"$NAME"
-	echo "$DBNAME"
-	echo "$TARGET"
+	SED_OAUTH='/^public_key\|^private_key/ s/tractstack/t8k\/'"$TARGET"'\/'"$3"'/g'
+	echo ""
+	echo "$SED_OAUTH"
+	echo ""
 	cd ~/"$TARGET"/"$NAME"/srv/public_html
 fi
 
@@ -32,6 +35,13 @@ cd ..
 
 cd web/profiles
 git clone https://github.com/AtRiskMedia/tractstack-drupal.git
+if [[ -z "$TARGET" ]]; then
+	sed -i -e "$SED_OAUTH" /home/"$NAME"/srv/public_html/drupal/web/profiles/tractstack-drupal/config/install/simple_oauth.settings.yml
+else
+	echo sed -i -e "$SED_OAUTH" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/profiles/tractstack-drupal/config/install/simple_oauth.settings.yml
+	sed -i -e "$SED_OAUTH" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/profiles/tractstack-drupal/config/install/simple_oauth.settings.yml
+fi
+
 cd ../..
 
 ./vendor/bin/drush site-install tractstack --db-url=mysql://"$DB_NAME":"$DB_PASSWORD"@localhost/"$DB_NAME" --site-name=TractStack-"$NAME" --account-name=admin --account-pass="$ACCOUNT_PASSWORD" -y

@@ -31,11 +31,11 @@ echo -e "${reset}"
 TARGET=$(cat ~/"$OVERRIDE"releases/watch/build.lock)
 echo $TARGET
 
-if grep -q INITIALIZE_SHOPIFY=true ~/"$OVERRIDE"src/gatsby-starter-tractstack/.env.production; then
-	SHOPIFY="1"
-else
-	SHOPIFY="0"
-fi
+#if grep -q INITIALIZE_SHOPIFY=true ~/"$OVERRIDE"src/gatsby-starter-tractstack/.env.production; then
+#	SHOPIFY="1"
+#else
+#	SHOPIFY="0"
+#fi
 
 if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1" = "all" ]; then
 	RAN=true
@@ -43,9 +43,9 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 	echo -e "building your ${white}Story Keep (backend)${reset}"
 	cd ~/"$OVERRIDE"src/gatsby-starter-storykeep/
 	git pull
-	yarn install
+	echo Y | yarn install
 	gatsby clean
-	y | gatsby build
+	gatsby build
 	cd ~/"$OVERRIDE"releases
 	target=$(readlink -e ~/"$OVERRIDE"releases/storykeep/current)
 	mkdir -p ~/"$OVERRIDE"releases/storykeep/"$NOW"
@@ -61,41 +61,43 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 fi
 
 if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "$1" = "all" ]; then
-	RAN=true
 	echo ""
-	echo -e "building ${white}$SITENAME (frontend)${reset}"
-	if [ "$SHOPIFY" -eq "1" ]; then
-		cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/hooks/* ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/
-		cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/pages/* ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/
-		cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/shopify-components ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/
-		cp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/gatsby-config.ts ~/"$OVERRIDE"src/gatsby-starter-tractstack/
-	else
-		cp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/gatsby-config.ts ~/"$OVERRIDE"src/gatsby-starter-tractstack/
-		cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/shopify-components ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/use-product-data.tsx
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/cart.tsx
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/products/{shopifyProduct.handle}.tsx
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/AddToCart.tsx
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/BuyNow.tsx
-		rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/LineItem.tsx
-	fi
-	cd ~/"$OVERRIDE"src/gatsby-starter-tractstack/
-	git pull
-	yarn install
-	gatsby clean
-	y | gatsby build
-	cd ~/"$OVERRIDE"releases
-	target=$(readlink -e ~/"$OVERRIDE"releases/tractstack/current)
-	mkdir -p ~/"$OVERRIDE"releases/tractstack/"$NOW"
-	cd ~"$OVERRIDE"/releases/tractstack/"$NOW"
-	cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/public/* .
-	ln -sf sitemap-index.xml sitemap.xml
-	ln -sf ~/"$OVERRIDE"srv/tractstack-concierge/api/
-	ln -sf ~/"$OVERRIDE"srv/public_html/drupal/web/ d
-	cd ~/"$OVERRIDE"releases/tractstack
-	rm -rf $target
-	ln -sf "$NOW" current
-	cd ~/"$OVERRIDE"src/gatsby-starter-tractstack/
+	echo REPLACED gatsby-starter-tractstack with tractstack-frontend but have not updated this script!
+	RAN=true
+	#echo ""
+	#echo -e "building ${white}$SITENAME (frontend)${reset}"
+	#if [ "$SHOPIFY" -eq "1" ]; then
+	#	cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/hooks/* ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/
+	#	cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/pages/* ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/
+	#	cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/shopify-components ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/
+	#	cp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/gatsby-config.ts ~/"$OVERRIDE"src/gatsby-starter-tractstack/
+	#else
+	#	cp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/gatsby-config.ts ~/"$OVERRIDE"src/gatsby-starter-tractstack/
+	#	cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/shopify-components ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/use-product-data.tsx
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/cart.tsx
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/products/{shopifyProduct.handle}.tsx
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/AddToCart.tsx
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/BuyNow.tsx
+	#	rm ~/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/LineItem.tsx
+	#fi
+	#cd ~/"$OVERRIDE"src/gatsby-starter-tractstack/
+	#git pull
+	#yarn install
+	#gatsby clean
+	#y | gatsby build
+	#cd ~/"$OVERRIDE"releases
+	#target=$(readlink -e ~/"$OVERRIDE"releases/tractstack/current)
+	#mkdir -p ~/"$OVERRIDE"releases/tractstack/"$NOW"
+	#cd ~"$OVERRIDE"/releases/tractstack/"$NOW"
+	#cp -rp ~/"$OVERRIDE"src/gatsby-starter-tractstack/public/* .
+	#ln -sf sitemap-index.xml sitemap.xml
+	#ln -sf ~/"$OVERRIDE"srv/tractstack-concierge/api/
+	#ln -sf ~/"$OVERRIDE"srv/public_html/drupal/web/ d
+	#cd ~/"$OVERRIDE"releases/tractstack
+	#rm -rf $target
+	#ln -sf "$NOW" current
+	#cd ~/"$OVERRIDE"src/gatsby-starter-tractstack/
 	echo -e "${blue}done.${reset}"
 fi
 

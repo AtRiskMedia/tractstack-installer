@@ -9,6 +9,7 @@ elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 	NAME="$2"_"$1"
 	INSTALL_USER="t8k"
 	SED='s/ZZZZZ/'"$1"'/g'
+	SED2='s/ZZZZZ/'"$NAME"'/g'
 else
 	echo To install Tract Stack with into a target environment, please specific features or sandbox
 	echo Usage: sudo ./tractstack-install.sh username target
@@ -78,6 +79,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo ""
 	echo Installing Tract Stack as user: "$NAME"
 	useradd -m "$NAME"
+	chown "$NAME":www-data /home/"$NAME"
 	mkdir /home/"$NAME"/scripts
 	cp ./tractstack-home-init.sh /home/"$NAME"/scripts/
 	cp ./tractstack-init-drupal.sh /home/"$NAME"/scripts/
@@ -109,20 +111,26 @@ else
 	./fix-drupal.sh /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web t8k
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/*key
-	chown t8k:"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/web.config
+	chown t8k:t8k /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/web.config
 	chmod 640 /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/private.key
 	chmod 640 /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/public.key
 	cat ../files/drupal/"$TARGET".settings.incl >>/home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
 fi
 
-#echo ""
-#echo Creating a certificate
-#if [ "$NAME" == "$INSTALL_USER" ]; then
-#	./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 25
-#else
-#	./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 25
-#fi
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	if [ ! -f /etc/letsencrypt/live/"$NAME".tractstack.com ]; then
+		echo ""
+		echo Creating a certificate
+		./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 25
+	fi
+else
+	if [ ! -f /etc/letsencrypt/live/"$TARGET"."$1".tractstack.com ]; then
+		echo ""
+		echo Creating a certificate
+		./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 25
+	fi
+fi
 
 echo ""
 echo Creating Concierge database: concierge_"$NAME"
@@ -205,31 +213,38 @@ systemctl start t8k-"$NAME".path
 if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo ""
 	echo Deploying config
-	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/gatsby-starter-tractstack/.env.production
-	cp ../files/assets/* /home/"$NAME"/src/gatsby-starter-tractstack/assets/
-	truncate -s 0 /home/"$NAME"/src/gatsby-starter-tractstack/src/styles/custom.css
+	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/tractstack-frontend/.env
+	cp ../files/tractstack-frontend/astro.config.ts /home/"$NAME"/src/tractstack-frontend
+	cp ../files/tractstack-frontend/src/config.ts /home/"$NAME"/src/tractstack-frontend/src/
+	cp -r ../files/tractstack-frontend/public /home/"$NAME"/src/tractstack-frontend/
+	cp ../files/tractstack-frontend/src/custom/codehooks.tsx /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/
+	truncate -s 0 /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	cp /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx.example /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx
+	cp ../files/tractstack-frontend/public/custom/* /home/"$NAME"/src/gatsby-starter-storykeep/assets/
 	cp ../files/conf/storykeep.env.incl /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
-	cp ../files/assets/* /home/"$NAME"/src/gatsby-starter-storykeep/assets/
 	truncate -s 0 /home/"$NAME"/src/gatsby-starter-storykeep/src/styles/custom.css
-	cp /home/"$NAME"/src/gatsby-starter-tractstack/src/custom/codehooks.tsx.example /home/"$NAME"/src/gatsby-starter-tractstack/src/custom/codehooks.tsx
 	cp ../files/conf/concierge.env.incl /home/"$NAME"/srv/tractstack-concierge/.env
-	sed -i -e "$SED" /home/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/.env
+	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/astro.config.ts
+	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	sed -i -e "$SED" /home/"$NAME"/srv/tractstack-concierge/.env
-	touch /home/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chown "$NAME":www-data /home/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chown "$NAME":www-data /home/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	touch /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/.env
+	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/astro.config.ts
+	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/config.ts
+	chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/custom
+	chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/public
 	chown "$NAME":www-data /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/.env
 	chown "$NAME":www-data /home/"$NAME"/releases/watch
-	chmod 660 /home/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chmod 660 /home/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	chmod 660 /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chmod 660 /home/"$NAME"/src/tractstack-frontend/.env
 	chmod 660 /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chmod 660 /home/"$NAME"/srv/tractstack-concierge/.env
 	chmod 770 /home/"$NAME"/releases/watch
 
-	echo BASIC_AUTH_PASSWORD="$DRUPAL_PASS" >>/home/"$NAME"/src/gatsby-starter-tractstack/.env.production
 	echo BASIC_AUTH_PASSWORD="$DRUPAL_PASS" >>/home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	echo BUILDER_SECRET_KEY="$BUILDER_SECRET_KEY" >>/home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	echo DRUPAL_OAUTH_CLIENT_SECRET="$DRUPAL_OAUTH_CLIENT_SECRET" >>/home/"$NAME"/src/gatsby-starter-storykeep/.env.production
@@ -243,31 +258,38 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 else
 	echo ""
 	echo Deploying config in "$TARGET"
-	cp ../files/conf/frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/.env.production
-	cp ../files/assets/* /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/assets/
-	truncate -s 0 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/src/styles/custom.css
+	cp ../files/conf/"$TARGET".frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
+	cp ../files/tractstack-frontend/"$TARGET".astro.config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
+	cp ../files/tractstack-frontend/src/"$TARGET".config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
+	cp -r ../files/tractstack-frontend/public /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/
+	cp ../files/tractstack-frontend/src/custom/codehooks.tsx /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom/
+	truncate -s 0 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	cp /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx.example /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx
-	cp ../files/conf/storykeep.env.incl /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
-	cp ../files/assets/* /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/assets/
+	cp ../files/conf/"$TARGET".storykeep.env.incl /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
+	cp ../files/tractstack-frontend/public/custom/* /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/assets/
 	truncate -s 0 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/src/styles/custom.css
-	cp /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/src/custom/codehooks.tsx.example /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/src/custom/codehooks.tsx
-	cp ../files/conf/concierge.env.incl /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
-	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	cp ../files/conf/"$TARGET".concierge.env.incl /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
+	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
+	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
+	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
-	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
-	touch /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	sed -i -e "$SED2" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
+	touch /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
+	chown "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
+	chown "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
+	chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom
+	chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/public
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/releases/watch
-	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/tailwind.whitelist
-	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/.env.production
+	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
+	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
 	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chmod 660 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	chmod 770 /home/t8k/"$TARGET"/"$NAME"/releases/watch
 
-	echo BASIC_AUTH_PASSWORD="$DRUPAL_PASS" >>/home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-tractstack/.env.production
 	echo BASIC_AUTH_PASSWORD="$DRUPAL_PASS" >>/home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	echo BUILDER_SECRET_KEY="$BUILDER_SECRET_KEY" >>/home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	echo DRUPAL_OAUTH_CLIENT_SECRET="$DRUPAL_OAUTH_CLIENT_SECRET" >>/home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
