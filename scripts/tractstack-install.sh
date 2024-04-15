@@ -86,6 +86,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	cp ./build.sh /home/"$NAME"/scripts/
 	sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
 	sudo -H -u "$NAME" bash -c '~/scripts/tractstack-init-drupal.sh '"$DB_PASS"' '"$DRUPAL_PASS"
+	rm /home/"$NAME"/scripts/tractstack-home-init.sh
+	rm /home/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/"$NAME"/srv/public_html/drupal/oauth_keys
 	./fix-drupal.sh /home/"$NAME"/srv/public_html/drupal/web "$NAME"
 	chown "$NAME":www-data /home/"$NAME"/srv/public_html/drupal/oauth_keys
@@ -107,6 +109,8 @@ else
 	cp ./build.sh /home/"t8k/"$TARGET"/$NAME"/scripts/
 	sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-home-init.sh '"$NAME"' '"$TARGET"
 	sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-init-drupal.sh '"$DB_PASS"' '"$DRUPAL_PASS"' '"$NAME"' '"$TARGET"
+	rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-home-init.sh
+	rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys
 	./fix-drupal.sh /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web t8k
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys
@@ -213,6 +217,8 @@ systemctl start t8k-"$NAME".path
 if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo ""
 	echo Deploying config
+	echo NAME="$NAME" >/home/"$NAME"/.env
+	echo USER="$NAME" >>/home/"$NAME"/.env
 	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/astro.config.ts /home/"$NAME"/src/tractstack-frontend
 	cp ../files/tractstack-frontend/src/config.ts /home/"$NAME"/src/tractstack-frontend/src/
@@ -253,11 +259,15 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo BUILDER_SECRET_KEY="$BUILDER_SECRET_KEY" >>/home/"$NAME"/srv/tractstack-concierge/.env
 
 	echo ""
-	echo Running build on storykeep
-	sudo -H -u "$NAME" bash -c '~/scripts/build.sh back'
+	echo Running build on storykeep and frontend
+	cd /home/"$NAME"/scripts
+	./build.sh all
+
 else
 	echo ""
 	echo Deploying config in "$TARGET"
+	echo NAME="$NAME" >/home/t8k/"$TARGET"/"$NAME"/.env
+	echo USER=t8k >>/home/t8k/"$TARGET"/"$NAME"/.env
 	cp ../files/conf/"$TARGET".frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/"$TARGET".astro.config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	cp ../files/tractstack-frontend/src/"$TARGET".config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
@@ -277,10 +287,10 @@ else
 	touch /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
-	chown "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
-	chown "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
-	chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom
-	chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/public
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
+	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom
+	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/public
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/releases/watch
@@ -298,7 +308,7 @@ else
 	echo BUILDER_SECRET_KEY="$BUILDER_SECRET_KEY" >>/home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 
 	echo ""
-	echo Running build on storykeep
-	echo sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/build.sh back '"$1"' '"$TARGET"
-	sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/build.sh back '"$1"' '"$TARGET"
+	echo Running build on storykeep and frontend
+	cd /home/t8k/"$TARGET"/"$NAME"/scripts
+	./build.sh all "$1" "$TARGET"
 fi

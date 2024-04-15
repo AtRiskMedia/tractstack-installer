@@ -2,5 +2,5 @@
 Description="Run tractstack build process"
 
 [Service]
-User=t8k
+WorkingDirectory=/home/t8k/features/features_ZZZZZ/scripts
 ExecStart=/home/t8k/features/features_ZZZZZ/scripts/build.sh
