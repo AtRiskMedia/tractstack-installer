@@ -312,3 +312,41 @@ else
 	cd /home/t8k/"$TARGET"/"$NAME"/scripts
 	./build.sh all "$1" "$TARGET"
 fi
+
+echo ""
+echo Congrats Tract Stack has been installed to:
+if [ "$NAME" == "$INSTALL_USER" ]; then
+  echo /home/"$USER"/
+else
+  echo /home/t8k/"$TARGET"/"$NAME"/
+fi
+
+echo ""
+echo Required next steps:
+if [ "$NAME" == "$INSTALL_USER" ]; then
+  echo - log-in to https://storykeep."$NAME".tractstack.com/d
+else
+  echo - log-in to https://"$TARGET".storykeep."$1".tractstack.com/d
+fi
+echo -- username: admin, password: "$DRUPAL_PASS"
+echo ""
+echo - create an oauth client, -n
+if [ "$NAME" == "$INSTALL_USER" ]; then
+  echo https://storykeep."$NAME".tractstack.com/d/admin/config/services/consumer
+else
+  echo https://"$TARGET".storykeep."$1".tractstack.com/d/admin/config/services/consumer
+fi
+echo -- Label: Builder
+echo -- ClientId: builder
+echo -- New Secret: "$DRUPAL_OAUTH_CLIENT_SECRET" 
+echo -- Scopes: Select builder role 
+echo ""
+echo - optional: create a user with the builder role
+echo ""
+echo - finally, log-in to your storykeep: -n
+if [ "$NAME" == "$INSTALL_USER" ]; then
+  echo https://storykeep."$NAME".tractstack.com
+else
+  echo https://"$TARGET".storykeep."$1".tractstack.com
+fi
+echo ""
