@@ -5,6 +5,8 @@ if [ -f ../.env ]; then
 	NAME=$(echo "$NAME_RAW" | sed 's/NAME\=//g')
 	USR_RAW=$(cat ../.env | grep USER)
 	USR=$(echo "$USR_RAW" | sed 's/USER\=//g')
+	PORT_RAW=$(cat ../.env | grep PORT)
+	PORT=$(echo "$PORT_RAW" | sed 's/PORT\=//g')
 else
 	echo "FATAL ERROR: Tract Stack ~/.env with NAME and USER not found."
 	exit
@@ -12,8 +14,10 @@ fi
 
 if [[ "$3" == "features" || "$3" == "sandbox" ]]; then
 	OVERRIDE="$3"/"$3"_"$2"'/'
+	ID="$3"-"$2"
 else
 	OVERRIDE=
+	ID="$USR"
 fi
 
 SITENAME="tractstack"
@@ -39,12 +43,6 @@ echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
 TARGET=$(cat /home/"$USR"/"$OVERRIDE"releases/watch/build.lock)
-
-#if grep -q INITIALIZE_SHOPIFY=true /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/.env.production; then
-#	SHOPIFY="1"
-#else
-#	SHOPIFY="0"
-#fi
 
 if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1" = "all" ]; then
 	RAN=true
@@ -88,40 +86,24 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	echo ""
 	echo REPLACED gatsby-starter-tractstack with tractstack-frontend but have not updated this script!
 	RAN=true
-	#echo ""
-	#echo -e "building ${white}$SITENAME (frontend)${reset}"
-	#if [ "$SHOPIFY" -eq "1" ]; then
-	#	cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/hooks/* /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/
-	#	cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/pages/* /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/
-	#	cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/shopify-components /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/
-	#	cp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/shopify/gatsby-config.ts /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/
-	#else
-	#	cp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/gatsby-config.ts /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/
-	#	cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/integrations/no-shopify/shopify-components /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/hooks/use-product-data.tsx
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/cart.tsx
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/pages/products/{shopifyProduct.handle}.tsx
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/AddToCart.tsx
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/BuyNow.tsx
-	#	rm /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/src/shopify-components/LineItem.tsx
-	#fi
-	#cd /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/
-	#git pull
-	#yarn install
-	#gatsby clean
-	#y | gatsby build
-	#cd /home/"$USR"/"$OVERRIDE"releases
-	#target=$(readlink -e /home/"$USR"/"$OVERRIDE"releases/tractstack/current)
-	#mkdir -p /home/"$USR"/"$OVERRIDE"releases/tractstack/"$NOW"
-	#cd ~"$OVERRIDE"/releases/tractstack/"$NOW"
-	#cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/public/* .
-	#ln -sf sitemap-index.xml sitemap.xml
-	#ln -sf /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/
-	#ln -sf /home/"$USR"/"$OVERRIDE"srv/public_html/drupal/web/ d
-	#cd /home/"$USR"/"$OVERRIDE"releases/tractstack
-	#rm -rf $target
-	#ln -sf "$NOW" current
-	#cd /home/"$USR"/"$OVERRIDE"src/gatsby-starter-tractstack/
+	echo ""
+	echo -e "building ${white}$SITENAME (frontend)${reset}"
+
+	if [ "$USER" != "$USR" ]; then
+		cd /home/t8k/"$OVERRIDE"src/tractstack-frontend
+	else
+		cd /home/"$USR"/src/tractstack-frontend
+	fi
+	sudo docker build --network=host -t tractstack-frontend-"$ID" .
+	RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
+	if [ ! -z "$RUNNING" ]; then
+		sudo docker stop "$RUNNING"
+	fi
+	if [ "$USER" != "$USR" ]; then
+	  sudo docker run --net=host -p "$PORT" -d --restart unless-stopped tractstack-frontend-"$ID"
+	else
+	  sudo docker run -p "$PORT":4321 -d --restart unless-stopped tractstack-frontend-"$ID"
+	fi
 	echo -e "${blue}done.${reset}"
 fi
 
