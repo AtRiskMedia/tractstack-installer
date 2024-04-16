@@ -1,11 +1,22 @@
 #!/bin/bash
 
-if [ -f ../.env ]; then
-	NAME_RAW=$(cat ../.env | grep NAME)
+if [ ! -z $3 ]; then
+	echo cd /home/t8k/"$3"/"$3"_"$2"
+	cd /home/t8k/"$3"/"$3"_"$2"
+elif [ ! -z $2 ]; then
+	echo cd /home/"$2"
+	cd /home/"$2"
+else
+	echo cd ..
+	cd ..
+fi
+
+if [ -f ./.env ]; then
+	NAME_RAW=$(cat ./.env | grep NAME)
 	NAME=$(echo "$NAME_RAW" | sed 's/NAME\=//g')
-	USR_RAW=$(cat ../.env | grep USER)
+	USR_RAW=$(cat ./.env | grep USER)
 	USR=$(echo "$USR_RAW" | sed 's/USER\=//g')
-	PORT_RAW=$(cat ../.env | grep PORT)
+	PORT_RAW=$(cat ./.env | grep PORT)
 	PORT=$(echo "$PORT_RAW" | sed 's/PORT\=//g')
 else
 	echo "FATAL ERROR: Tract Stack ~/.env with NAME and USER not found."
@@ -83,13 +94,11 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 fi
 
 if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "$1" = "all" ]; then
-	echo ""
-	echo REPLACED gatsby-starter-tractstack with tractstack-frontend but have not updated this script!
 	RAN=true
 	echo ""
 	echo -e "building ${white}$SITENAME (frontend)${reset}"
 
-	if [ "$USER" != "$USR" ]; then
+	if [ "$OVERRIDE" != "" ]; then
 		cd /home/t8k/"$OVERRIDE"src/tractstack-frontend
 	else
 		cd /home/"$USR"/src/tractstack-frontend
@@ -98,12 +107,12 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
 	if [ ! -z "$RUNNING" ]; then
 		sudo docker stop "$RUNNING"
-	fi
-	if [ "$USER" != "$USR" ]; then
-	  sudo docker run --net=host -p "$PORT" -d --restart unless-stopped tractstack-frontend-"$ID"
+		sudo docker rm "$RUNNING"
+		sudo docker ps
 	else
-	  sudo docker run -p "$PORT":4321 -d --restart unless-stopped tractstack-frontend-"$ID"
+		echo * new container
 	fi
+	sudo docker run --net=host -p "$PORT" -d --restart unless-stopped tractstack-frontend-"$ID"
 	echo -e "${blue}done.${reset}"
 fi
 

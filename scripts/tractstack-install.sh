@@ -245,9 +245,10 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/astro.config.ts /home/"$NAME"/src/tractstack-frontend
+	cp ../files/tractstack-frontend/Dockerfile /home/"$NAME"/src/tractstack-frontend
 	cp ../files/tractstack-frontend/src/config.ts /home/"$NAME"/src/tractstack-frontend/src/
 	cp -r ../files/tractstack-frontend/public /home/"$NAME"/src/tractstack-frontend/
-	cp ../files/tractstack-frontend/src/custom/codehooks.tsx /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/
+	cp ../files/tractstack-frontend/src/custom/codehooks.tsx /home/"$NAME"/src/tractstack-frontend/src/custom/
 	truncate -s 0 /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	cp /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx.example /home/"$NAME"/src/gatsby-starter-storykeep/src/custom/codehooks.tsx
 	cp ../files/tractstack-frontend/public/custom/* /home/"$NAME"/src/gatsby-starter-storykeep/assets/
@@ -255,6 +256,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	truncate -s 0 /home/"$NAME"/src/gatsby-starter-storykeep/src/styles/custom.css
 	cp ../files/conf/concierge.env.incl /home/"$NAME"/srv/tractstack-concierge/.env
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/.env
+	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/Dockerfile
+	sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-frontend/Dockerfile
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/astro.config.ts
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
@@ -262,6 +265,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	touch /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/.env
+	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/Dockerfile
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/astro.config.ts
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/config.ts
 	chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/custom
@@ -295,6 +299,7 @@ else
 	echo PORT="$PORT" >>/home/t8k/"$TARGET"/"$NAME"/.env
 	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/"$TARGET".frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
+	cp ../files/tractstack-frontend/"$TARGET".Dockerfile /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
 	cp ../files/tractstack-frontend/"$TARGET".astro.config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	cp ../files/tractstack-frontend/src/"$TARGET".config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	cp -r ../files/tractstack-frontend/public /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/
@@ -306,6 +311,8 @@ else
 	truncate -s 0 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/src/styles/custom.css
 	cp ../files/conf/"$TARGET".concierge.env.incl /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
+	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
+	sed -i -e "$SED_PORT" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
@@ -313,6 +320,7 @@ else
 	touch /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom

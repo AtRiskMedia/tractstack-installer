@@ -4,9 +4,11 @@ TARGET=$2
 if [[ -z "$TARGET" ]]; then
 	NAME=$1
 	INSTALL_USER=$1
+	ID="$1"
 elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 	NAME="$2"_"$1"
 	INSTALL_USER="t8k"
+	ID="$3"-"$2"
 else
 	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
 	echo Usage: sudo ./tractstack-uninstall.sh username target
@@ -33,6 +35,11 @@ echo -e ""
 echo -e "${reset}All-in-one publishing platform to grow your content into a business"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
+
+if [ "$NAME" == "t8k" ]; then
+	echo "Cannot uninstall primary t8k user; did you mean to?"
+	exit
+fi
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
 	if [ ! -d /home/"$NAME" ]; then
@@ -62,6 +69,14 @@ if [ "$USER" != root ]; then
 	echo Must provide sudo privileges
 	echo ""
 	exit 1
+fi
+
+RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
+if [ ! -z "$RUNNING" ]; then
+	echo ""
+	echo Stopping Docker
+	sudo docker stop "$RUNNING"
+	sudo docker rm "$RUNNING"
 fi
 
 echo ""
