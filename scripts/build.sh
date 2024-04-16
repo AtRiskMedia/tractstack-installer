@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -z ../.env ]; then
+if [ -f ../.env ]; then
 	NAME_RAW=$(cat ../.env | grep NAME)
 	NAME=$(echo "$NAME_RAW" | sed 's/NAME\=//g')
 	USR_RAW=$(cat ../.env | grep USER)

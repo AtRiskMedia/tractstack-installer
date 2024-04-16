@@ -65,6 +65,11 @@ if [ "$USER" != root ]; then
 fi
 
 echo ""
+echo Cancelling port reservation
+cp /home/t8k/.env /home/t8k/.env.bak
+grep -v "^PORT_""$NAME" /home/t8k/.env.bak >/home/t8k/.env
+
+echo ""
 echo Dropping drupal database and user: t8k_"$NAME"
 mysql -e "DROP DATABASE ${DB_NAME};" >/dev/null 2>&1
 mysql -e "DROP USER ${DB_NAME}@localhost;" >/dev/null 2>&1

@@ -1,6 +1,26 @@
 #!/bin/bash
 
+if [ -f /home/t8k/.env ]; then
+	array=(4321 4322 4323 4324 4325 4326 4327 4328 4329 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4341 4342 4343 4344 4345 4346 4347 4348 4349 4350 4351)
+	for i in "${array[@]}"; do
+		USED=$(cat /home/t8k/.env | grep "$i" | wc -l)
+		if [ -z "$PORT" ]; then
+			if [ "$USED" == 0 ]; then
+				echo !! using port $i
+				PORT=$i
+			fi
+		fi
+	done
+else
+	PORT=4321
+fi
+if [ -z "$PORT" ]; then
+	echo FATAL ERROR: All ports are allocated.
+	exit
+fi
+
 TARGET=$2
+SED_PORT='s/ZZZZY/'"$PORT"'/g'
 if [[ -z "$TARGET" ]]; then
 	NAME=$1
 	INSTALL_USER=$1
@@ -156,6 +176,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	cp ../files/nginx/tractstack.conf /etc/nginx/sites-available/t8k."$NAME".conf
 	sed -i -e "$SED" /etc/nginx/sites-available/storykeep."$NAME".conf
 	sed -i -e "$SED" /etc/nginx/sites-available/t8k."$NAME".conf
+	sed -i -e "$SED_PORT" /etc/nginx/sites-available/t8k."$NAME".conf
 	cd /etc/nginx/sites-enabled
 	ln -s ../sites-available/storykeep."$NAME".conf
 	ln -s ../sites-available/t8k."$NAME".conf
@@ -177,6 +198,7 @@ else
 	cp ../files/nginx/"$TARGET".tractstack.conf /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
 	sed -i -e "$SED" /etc/nginx/sites-available/"$TARGET".storykeep."$1".conf
 	sed -i -e "$SED" /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
+	sed -i -e "$SED_PORT" /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
 	cd /etc/nginx/sites-enabled
 	ln -s ../sites-available/"$TARGET".storykeep."$1".conf
 	ln -s ../sites-available/"$TARGET".t8k."$1".conf
@@ -219,6 +241,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo Deploying config
 	echo NAME="$NAME" >/home/"$NAME"/.env
 	echo USER="$NAME" >>/home/"$NAME"/.env
+	echo PORT="$PORT" >>/home/"$NAME"/.env
+	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/astro.config.ts /home/"$NAME"/src/tractstack-frontend
 	cp ../files/tractstack-frontend/src/config.ts /home/"$NAME"/src/tractstack-frontend/src/
@@ -268,6 +292,8 @@ else
 	echo Deploying config in "$TARGET"
 	echo NAME="$NAME" >/home/t8k/"$TARGET"/"$NAME"/.env
 	echo USER=t8k >>/home/t8k/"$TARGET"/"$NAME"/.env
+	echo PORT="$PORT" >>/home/t8k/"$TARGET"/"$NAME"/.env
+	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/"$TARGET".frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/"$TARGET".astro.config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	cp ../files/tractstack-frontend/src/"$TARGET".config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
@@ -316,37 +342,41 @@ fi
 echo ""
 echo Congrats Tract Stack has been installed to:
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  echo /home/"$USER"/
+	echo /home/"$NAME"/
 else
-  echo /home/t8k/"$TARGET"/"$NAME"/
+	echo /home/t8k/"$TARGET"/"$NAME"/
 fi
 
 echo ""
 echo Required next steps:
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  echo - log-in to https://storykeep."$NAME".tractstack.com/d
+	echo - log-in to https://storykeep."$NAME".tractstack.com/d
 else
-  echo - log-in to https://"$TARGET".storykeep."$1".tractstack.com/d
+	echo - log-in to https://"$TARGET".storykeep."$1".tractstack.com/d
 fi
+echo ""
+echo IMPORTANT: Log-out of Drupal before accessing storykeep -- otherwise you will get 403 errors --
+echo better yet = use incognito mode for Drupal
+echo ""
 echo -- username: admin, password: "$DRUPAL_PASS"
 echo ""
-echo - create an oauth client, -n
+echo - create an oauth client:
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  echo https://storykeep."$NAME".tractstack.com/d/admin/config/services/consumer
+	echo https://storykeep."$NAME".tractstack.com/d/admin/config/services/consumer
 else
-  echo https://"$TARGET".storykeep."$1".tractstack.com/d/admin/config/services/consumer
+	echo https://"$TARGET".storykeep."$1".tractstack.com/d/admin/config/services/consumer
 fi
 echo -- Label: Builder
 echo -- ClientId: builder
-echo -- New Secret: "$DRUPAL_OAUTH_CLIENT_SECRET" 
-echo -- Scopes: Select builder role 
+echo -- New Secret: "$DRUPAL_OAUTH_CLIENT_SECRET"
+echo -- Scopes: Select builder role
 echo ""
 echo - optional: create a user with the builder role
 echo ""
-echo - finally, log-in to your storykeep: -n
+echo - finally, log-in to your storykeep:
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  echo https://storykeep."$NAME".tractstack.com
+	echo https://storykeep."$NAME".tractstack.com
 else
-  echo https://"$TARGET".storykeep."$1".tractstack.com
+	echo https://"$TARGET".storykeep."$1".tractstack.com
 fi
 echo ""
