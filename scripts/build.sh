@@ -112,7 +112,7 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	else
 		echo * new container
 	fi
-	sudo docker run --net=host -p "$PORT" -d --restart unless-stopped tractstack-frontend-"$ID"
+	sudo docker run --net=host -d --restart unless-stopped tractstack-frontend-"$ID"
 	echo -e "${blue}done.${reset}"
 fi
 
