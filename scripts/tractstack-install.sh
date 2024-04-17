@@ -184,7 +184,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	if ! nginx -t 2>/dev/null; then
 		echo ""
 		echo Fatal Error creating Nginx config!
-		exit 1
 		rm /etc/nginx/sites-available/storykeep."$NAME".conf
 		rm /etc/nginx/sites-available/t8k."$NAME".conf
 		rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
