@@ -146,13 +146,13 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	if [ ! -f /etc/letsencrypt/live/"$NAME".tractstack.com ]; then
 		echo ""
 		echo Creating a certificate
-		./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 25
+		./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 45
 	fi
 else
 	if [ ! -f /etc/letsencrypt/live/"$TARGET"."$1".tractstack.com ]; then
 		echo ""
 		echo Creating a certificate
-		./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 25
+		./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 45
 	fi
 fi
 
@@ -184,6 +184,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	if ! nginx -t 2>/dev/null; then
 		echo ""
 		echo Fatal Error creating Nginx config!
+		exit 1
 		rm /etc/nginx/sites-available/storykeep."$NAME".conf
 		rm /etc/nginx/sites-available/t8k."$NAME".conf
 		rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
@@ -206,6 +207,7 @@ else
 	if ! nginx -t 2>/dev/null; then
 		echo ""
 		echo Fatal Error creating Nginx config!
+		exit 1
 		rm /etc/nginx/sites-available/"$TARGET".storykeep."$1".conf
 		rm /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
 		rm /etc/nginx/sites-enabled/"$TARGET".storykeep."$1".conf
