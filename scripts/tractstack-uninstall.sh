@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TARGET=$2
+echo "$TARGET"
 if [[ -z "$TARGET" ]]; then
 	NAME=$1
 	INSTALL_USER=$1
@@ -8,7 +9,7 @@ if [[ -z "$TARGET" ]]; then
 elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 	NAME="$2"_"$1"
 	INSTALL_USER="t8k"
-	ID="$3"-"$2"
+	ID="$2"-"$1"
 else
 	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
 	echo Usage: sudo ./tractstack-uninstall.sh username target
