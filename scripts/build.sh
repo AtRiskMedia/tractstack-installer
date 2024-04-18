@@ -1,5 +1,18 @@
 #!/bin/bash
 
+if [[ "$1" == "front" || "$1" == "back" || "$1" == "all" ]]; then
+  echo Building "$1"
+  echo ""
+else
+  echo Usage:
+  echo sudo ./build.sh 1 2 3
+  echo required: 1 = front, back, all
+  echo optional: 2 = username
+  echo optional: 3 = features \| sandbox \(or blank\)
+  echo ""
+  exit
+fi
+
 if [ ! -z $3 ]; then
 	echo cd /home/t8k/"$3"/"$3"_"$2"
 	cd /home/t8k/"$3"/"$3"_"$2"
