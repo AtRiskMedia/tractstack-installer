@@ -103,8 +103,8 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	else
 		cd /home/"$USR"/src/tractstack-frontend
 	fi
-	sudo docker build --network=host -t tractstack-frontend-"$ID" .
 	RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
+	sudo docker build --network=host -t tractstack-frontend-"$ID" .
 	if [ ! -z "$RUNNING" ]; then
 		sudo docker stop "$RUNNING"
 		sudo docker rm "$RUNNING"
