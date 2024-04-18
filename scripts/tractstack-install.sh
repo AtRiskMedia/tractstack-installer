@@ -320,7 +320,7 @@ else
 	sed -i -e "$SED2" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	touch /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
-	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
+	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
@@ -330,7 +330,7 @@ else
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/releases/watch
 	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
-	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env.production
+	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	chmod 660 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
 	chmod 770 /home/t8k/"$TARGET"/"$NAME"/releases/watch
