@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$1" == "front" || "$1" == "back" || "$1" == "all" ]]; then
+if [[ "$1" == "front" || "$1" == "back" || "$1" == "all" || -z "$1" ]]; then
   echo Building "$1"
   echo ""
 else
@@ -83,7 +83,9 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/tractstack-concierge/api/'
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/public_html/drupal/web/ d'
 		sudo -H -u "$USR" bash -c 'ln -sf /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/current'
-		rm -rf $target
+                if [ -f "$target" ]; then
+		  rm -rf $target
+		fi
 
 	else
 		cd /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/
@@ -99,8 +101,10 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		ln -sf /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/
 		ln -sf /home/"$USR"/"$OVERRIDE"srv/public_html/drupal/web/ d
 		cd /home/"$USR"/"$OVERRIDE"releases/storykeep
-		rm -rf $target
 		ln -sf "$NOW" current
+                if [ -f "$target" ]; then
+		  rm -rf $target
+		fi
 		cd /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/
 	fi
 	echo -e "${blue}done.${reset}"
