@@ -1,16 +1,16 @@
 #!/bin/bash
 
 if [[ "$1" == "front" || "$1" == "back" || "$1" == "all" || -z "$1" ]]; then
-  echo Building "$1"
-  echo ""
+	echo Building "$1"
+	echo ""
 else
-  echo Usage:
-  echo sudo ./build.sh 1 2 3
-  echo required: 1 = front, back, all
-  echo optional: 2 = username
-  echo optional: 3 = features \| sandbox \(or blank\)
-  echo ""
-  exit
+	echo Usage:
+	echo sudo ./build.sh 1 2 3
+	echo required: 1 = front, back, all
+	echo optional: 2 = username
+	echo optional: 3 = features \| sandbox \(or blank\)
+	echo ""
+	exit
 fi
 
 if [ ! -z $3 ]; then
@@ -68,6 +68,13 @@ echo -e "${reset}"
 
 TARGET=$(cat /home/"$USR"/"$OVERRIDE"releases/watch/build.lock)
 
+if [ "$TARGET" = "tailwind" ]; then
+	RAN=true
+	echo ""
+	echo -e "re-generating your ${white}styles${reset}"
+	echo yet to do...
+fi
+
 if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1" = "all" ]; then
 	RAN=true
 	echo ""
@@ -83,8 +90,8 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/tractstack-concierge/api/'
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/public_html/drupal/web/ d'
 		sudo -H -u "$USR" bash -c 'ln -sf /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/current'
-                if [ -f "$target" ]; then
-		  rm -rf $target
+		if [ -f "$target" ]; then
+			rm -rf $target
 		fi
 
 	else
@@ -102,8 +109,8 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		ln -sf /home/"$USR"/"$OVERRIDE"srv/public_html/drupal/web/ d
 		cd /home/"$USR"/"$OVERRIDE"releases/storykeep
 		ln -sf "$NOW" current
-                if [ -f "$target" ]; then
-		  rm -rf $target
+		if [ -f "$target" ]; then
+			rm -rf $target
 		fi
 		cd /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/
 	fi
