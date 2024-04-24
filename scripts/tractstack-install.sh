@@ -86,6 +86,20 @@ DRUPAL_PASS=$(</dev/urandom tr -dc A-Za-z | head -c22)
 DB_NAME=t8k_"$NAME"
 CONCIERGE_DB_NAME=concierge_"$NAME"
 
+if [ "$NAME" == "$INSTALL_USER" ]; then
+	if [ ! -f /etc/letsencrypt/live/"$NAME".tractstack.com ]; then
+		echo ""
+		echo Creating a certificate
+		./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 45
+	fi
+else
+	if [ ! -f /etc/letsencrypt/live/"$TARGET"."$1".tractstack.com ]; then
+		echo ""
+		echo Creating a certificate
+		./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 45
+	fi
+fi
+
 echo ""
 echo Creating Drupal database: t8k_"$NAME"
 mysql -e "DROP DATABASE ${DB_NAME};" >/dev/null 2>&1
@@ -107,6 +121,17 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
 	sudo -H -u "$NAME" bash -c '~/scripts/tractstack-init-drupal.sh '"$DB_PASS"' '"$DRUPAL_PASS"
 	rm /home/"$NAME"/scripts/tractstack-home-init.sh
+	mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles
+	mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend
+	mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.whitelist
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	echo '{"v":0}' > /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles
+	chmod 664 "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	rm /home/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/"$NAME"/srv/public_html/drupal/oauth_keys
 	./fix-drupal.sh /home/"$NAME"/srv/public_html/drupal/web "$NAME"
@@ -130,6 +155,17 @@ else
 	sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-home-init.sh '"$NAME"' '"$TARGET"
 	sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-init-drupal.sh '"$DB_PASS"' '"$DRUPAL_PASS"' '"$NAME"' '"$TARGET"
 	rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-home-init.sh
+	mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
+	mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend
+	mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.whitelist
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	echo '{"v":0}' > /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	chown -R t8k:www-data  /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
+	chmod 664 t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys
 	./fix-drupal.sh /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web t8k
@@ -140,20 +176,6 @@ else
 	chmod 640 /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys/public.key
 	cat ../files/drupal/"$TARGET".settings.incl >>/home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/web/sites/default/settings.php
-fi
-
-if [ "$NAME" == "$INSTALL_USER" ]; then
-	if [ ! -f /etc/letsencrypt/live/"$NAME".tractstack.com ]; then
-		echo ""
-		echo Creating a certificate
-		./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 45
-	fi
-else
-	if [ ! -f /etc/letsencrypt/live/"$TARGET"."$1".tractstack.com ]; then
-		echo ""
-		echo Creating a certificate
-		./cert.sh --expand -d "$TARGET"."$1".tractstack.com -d "$TARGET".storykeep."$1".tractstack.com --dns-cloudflare-propagation-seconds 45
-	fi
 fi
 
 echo ""

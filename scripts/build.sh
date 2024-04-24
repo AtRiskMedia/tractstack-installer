@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [[ "$1" == "front" || "$1" == "back" || "$1" == "all" || -z "$1" ]]; then
+if [[ "$1" == "tailwind" || "$1" == "front" || "$1" == "back" || "$1" == "all" || -z "$1" ]]; then
 	echo Building "$1"
 	echo ""
 else
 	echo Usage:
 	echo sudo ./build.sh 1 2 3
-	echo required: 1 = front, back, all
+	echo required: 1 = tailwind, front, back, all
 	echo optional: 2 = username
 	echo optional: 3 = features \| sandbox \(or blank\)
 	echo ""
@@ -68,12 +68,33 @@ echo -e "${reset}"
 
 TARGET=$(cat /home/"$USR"/"$OVERRIDE"releases/watch/build.lock)
 
-if [ "$TARGET" = "tailwind" ]; then
+if [[ "$TARGET" = "tailwind" || "$1" = "tailwind" ]]; then
 	RAN=true
-	echo ""
-	echo -e "re-generating your ${white}styles${reset}"
-	echo yet to do...
 fi
+echo ""
+echo -e "re-generating your ${white}styles${reset}"
+cd /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles
+if [ ! -s /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles/storykeep.css ]; then
+	echo Generating css for storykeep
+	cd storykeep
+	cp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/tailwind.whitelist . 
+	tailwindcss -m -o ../storykeep.css
+	cd ..
+fi
+echo Generating css for frontend
+cd frontend
+tailwindcss -m -o ../frontend.css.new
+cd ..
+if cmp -s frontend.css frontend.css.new; then
+  echo "* no changes"
+else
+  VER=$(cat v.json | tr -d " \t\n\r"| grep -o -E '[0-9]+')
+  NEW_VER=$(("$VER"+1))
+  cp frontend.css.new frontend.css
+  echo '{"v":'"$NEW_VER"'}' > v.json
+  echo "new styles! incrementing version"
+fi
+rm frontend.css.new
 
 if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1" = "all" ]; then
 	RAN=true
