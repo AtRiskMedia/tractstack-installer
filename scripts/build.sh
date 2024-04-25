@@ -102,12 +102,11 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 	echo -e "building your ${white}Story Keep (backend)${reset}"
 
 	if [ "$USER" != "$USR" ]; then
-		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/ && git pull'
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/ && echo Y | yarn install'
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/ && gatsby clean; gatsby build'
 		target=$(readlink -e /home/"$USR"/"$OVERRIDE"releases/storykeep/current)
 		sudo -H -u "$USR" bash -c 'mkdir -p /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' '
-		sudo -H -u "$USR" bash -c 'cp -rp /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/public/* /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' '
+		sudo -H -u "$USR" bash -c 'mv /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/public/* /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"'/ '
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/tractstack-concierge/api/'
 		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/public_html/drupal/web/ d'
 		sudo -H -u "$USR" bash -c 'ln -sf /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/current'
