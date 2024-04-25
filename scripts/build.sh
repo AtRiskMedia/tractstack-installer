@@ -77,7 +77,7 @@ cd /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles
 if [ ! -s /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles/storykeep.css ]; then
 	echo Generating css for storykeep
 	cd storykeep
-	cp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/tailwind.whitelist . 
+	cp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/tailwind.whitelist .
 	tailwindcss -m -o ../storykeep.css
 	cd ..
 fi
