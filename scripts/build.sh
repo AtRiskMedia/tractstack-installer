@@ -107,9 +107,9 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		target=$(readlink -e /home/"$USR"/"$OVERRIDE"releases/storykeep/current)
 		sudo -H -u "$USR" bash -c 'mkdir -p /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' '
 		sudo -H -u "$USR" bash -c 'mv /home/'"$USR"'/'"$OVERRIDE"'src/gatsby-starter-storykeep/public/* /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"'/ '
-		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/tractstack-concierge/api/'
-		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sf /home/'"$USR"'/'"$OVERRIDE"'srv/public_html/drupal/web/ d'
-		sudo -H -u "$USR" bash -c 'ln -sf /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/current'
+		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sfn /home/'"$USR"'/'"$OVERRIDE"'srv/tractstack-concierge/api/'
+		sudo -H -u "$USR" bash -c 'cd /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' && ln -sfn /home/'"$USR"'/'"$OVERRIDE"'srv/public_html/drupal/web/ d'
+		sudo -H -u "$USR" bash -c 'ln -sfn /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/'"$NOW"' /home/'"$USR"'/'"$OVERRIDE"'releases/storykeep/current'
 		if [ -f "$target" ]; then
 			rm -rf $target
 		fi
@@ -125,10 +125,10 @@ if [ "$TARGET" = "back" ] || [ "$TARGET" = "all" ] || [ "$1" = "back" ] || [ "$1
 		mkdir -p /home/"$USR"/"$OVERRIDE"releases/storykeep/"$NOW"
 		cd /home/"$USR"/"$OVERRIDE"releases/storykeep/"$NOW"
 		cp -rp /home/"$USR"/"$OVERRIDE"src/gatsby-starter-storykeep/public/* .
-		ln -sf /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/
-		ln -sf /home/"$USR"/"$OVERRIDE"srv/public_html/drupal/web/ d
+		ln -sfn /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/
+		ln -sfn /home/"$USR"/"$OVERRIDE"srv/public_html/drupal/web/ d
 		cd /home/"$USR"/"$OVERRIDE"releases/storykeep
-		ln -sf "$NOW" current
+		ln -sfn "$NOW" current
 		if [ -f "$target" ]; then
 			rm -rf $target
 		fi
