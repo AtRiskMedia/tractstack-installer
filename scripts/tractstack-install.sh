@@ -127,6 +127,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
 	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.whitelist
 	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
+	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css.new
 	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
 	touch /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
 	cp ../files/tailwind/tailwind.config.js /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
@@ -164,6 +165,7 @@ else
 	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
 	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.whitelist
 	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
+	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css.new
 	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
 	touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
 	cp ../files/tailwind/tailwind.config.js /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
