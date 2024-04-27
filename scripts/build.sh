@@ -151,7 +151,7 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	cd src
 	SITE_URL_RAW=$(cat ../.env | grep PUBLIC_SITE_URL)
 	SITE_URL=$(echo "$SITE_URL_RAW" | sed 's/PUBLIC_SITE_URL\=//g')
-	sed -i "s@\(^\s*\)website:\s.*@\1website: \"https:\"\/\/$SITE_URL\\\",@" config.ts
+	sed -i "s@\(^\s*\)website:\s.*@\1website: \"$SITE_URL\",@" config.ts
 	cd ..
 
 	RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
