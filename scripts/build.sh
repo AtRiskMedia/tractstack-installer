@@ -86,13 +86,13 @@ cd frontend
 tailwindcss -m -o ../frontend.css.new
 cd ..
 if cmp -s frontend.css frontend.css.new; then
-  echo "* no changes"
+	echo "* no changes"
 else
-  VER=$(cat v.json | tr -d " \t\n\r"| grep -o -E '[0-9]+')
-  NEW_VER=$(("$VER"+1))
-  cp frontend.css.new frontend.css
-  echo '{"v":'"$NEW_VER"'}' > v.json
-  echo "new styles! incrementing version"
+	VER=$(cat v.json | tr -d " \t\n\r" | grep -o -E '[0-9]+')
+	NEW_VER=$(("$VER" + 1))
+	cp frontend.css.new frontend.css
+	echo '{"v":'"$NEW_VER"'}' >v.json
+	echo "new styles! incrementing version"
 fi
 rm frontend.css.new
 
@@ -147,6 +147,13 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	else
 		cd /home/"$USR"/src/tractstack-frontend
 	fi
+
+	cd src
+	SITE_URL_RAW=$(cat ../.env | grep PUBLIC_SITE_URL)
+	SITE_URL=$(echo "$SITE_URL_RAW" | sed 's/PUBLIC_SITE_URL\=//g')
+	sed -i "s/\(^\s*\)website:\s.*/\1website: \"https:\"\/\/$SITE_URL\\\",/" config.ts
+	cd ..
+
 	RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
 	sudo docker build --network=host -t tractstack-frontend-"$ID" .
 	if [ ! -z "$RUNNING" ]; then
