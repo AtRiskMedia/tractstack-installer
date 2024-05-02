@@ -2,6 +2,7 @@ import type { Site } from "./types";
 
 export const SITE: Site = {
   website: "https://ZZZZZ.tractstack.com/", // replace this with your domain
+  imageDomain: "https://storykeep.ZZZZZ.tractstack.com/", // replace this with your storykeep domain
   author: "At Risk Media",
   desc: "All-in-one publishing platform to grow your content into a business",
   title: "TractStack",

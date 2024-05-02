@@ -275,7 +275,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo PORT="$PORT" >>/home/"$NAME"/.env
 	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/frontend.env.incl /home/"$NAME"/src/tractstack-frontend/.env
-	cp ../files/tractstack-frontend/astro.config.ts /home/"$NAME"/src/tractstack-frontend
 	cp ../files/tractstack-frontend/Dockerfile /home/"$NAME"/src/tractstack-frontend
 	cp ../files/tractstack-frontend/src/config.ts /home/"$NAME"/src/tractstack-frontend/src/
 	cp -r ../files/tractstack-frontend/public /home/"$NAME"/src/tractstack-frontend/
@@ -289,7 +288,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/.env
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/Dockerfile
 	sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-frontend/Dockerfile
-	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/astro.config.ts
 	sed -i -e "$SED" /home/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	sed -i -e "$SED" /home/"$NAME"/srv/tractstack-concierge/.env
@@ -297,7 +295,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/.env
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/Dockerfile
-	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/astro.config.ts
 	chown "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/config.ts
 	chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/src/custom
 	chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-frontend/public
@@ -331,7 +328,6 @@ else
 	echo PORT_"$NAME"="$PORT" >>/home/t8k/.env
 	cp ../files/conf/"$TARGET".frontend.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	cp ../files/tractstack-frontend/"$TARGET".Dockerfile /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
-	cp ../files/tractstack-frontend/"$TARGET".astro.config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	cp ../files/tractstack-frontend/src/"$TARGET".config.ts /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	cp -r ../files/tractstack-frontend/public /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/
 	cp ../files/tractstack-frontend/src/custom/codehooks.tsx /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom/
@@ -344,7 +340,6 @@ else
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
 	sed -i -e "$SED_PORT" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
-	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/gatsby-starter-storykeep/.env.production
 	sed -i -e "$SED2" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
@@ -352,7 +347,6 @@ else
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/tailwind.whitelist
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/.env
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/Dockerfile
-	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/astro.config.ts
 	chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/config.ts
 	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/src/custom
 	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-frontend/public
