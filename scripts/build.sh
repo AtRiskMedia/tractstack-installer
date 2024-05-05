@@ -159,6 +159,7 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
 	if [ ! -z "$RUNNING" ]; then
 		sudo docker stop "$RUNNING"
 		sudo docker rm "$RUNNING"
+		sudo docker rmi -f tractstack-frontend-"$ID"
 		sudo docker ps
 	else
 		echo * new container
