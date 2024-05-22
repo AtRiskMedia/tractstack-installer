@@ -135,7 +135,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	chown -R "$NAME":"$NAME" /home/"$NAME"/srv/tractstack-concierge/api/styles
 	echo '{"v":0}' > /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
 	chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
-	chmod 664 "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
+	chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	rm /home/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/"$NAME"/srv/public_html/drupal/oauth_keys
 	./fix-drupal.sh /home/"$NAME"/srv/public_html/drupal/web "$NAME"
