@@ -133,7 +133,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 	cp ../files/tailwind/tailwind.config.js /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
 	cp ../files/tailwind/tailwind.config.js /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend
 	chown -R "$NAME":"$NAME" /home/"$NAME"/srv/tractstack-concierge/api/styles
-	echo '{"v":0}' > /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	echo '{"v":0}' >/home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
 	chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	rm /home/"$NAME"/scripts/tractstack-init-drupal.sh
@@ -171,8 +171,8 @@ else
 	cp ../files/tailwind/tailwind.config.js /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
 	cp ../files/tailwind/tailwind.config.js /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend
 	chown -R "$NAME":"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
-	echo '{"v":0}' > /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
-	chown -R t8k:www-data  /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
+	echo '{"v":0}' >/home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
+	chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/*/tailwind.whitelist
 	rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-init-drupal.sh
 	cp ../files/drupal/web.config /home/t8k/"$TARGET"/"$NAME"/srv/public_html/drupal/oauth_keys
@@ -393,7 +393,7 @@ echo better yet = use incognito mode for Drupal
 echo ""
 echo -- username: admin, password: "$DRUPAL_PASS"
 echo ""
-echo - create an oauth client:
+echo - create an oauth consumer:
 if [ "$NAME" == "$INSTALL_USER" ]; then
 	echo https://storykeep."$NAME".tractstack.com/d/admin/config/services/consumer
 else
