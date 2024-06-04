@@ -1,0 +1,134 @@
+---
+- hosts: tractstack
+  become: yes
+
+  vars:
+    arch_mapping:  # Map ansible architecture {{ ansible_architecture }} names to Docker's architecture names
+      x86_64: amd64
+
+  vars_files:
+    - templates/php.yml
+    - templates/nodejs.yml
+
+  roles:
+    - { role: ansible-role-nginx }
+    - { role: ansible-role-php }
+    - { role: ansible-role-nodejs }
+    - { role: ansible-role-composer }
+
+  tasks:
+    - name: Install needed packages
+      apt:
+        name: ['git']
+
+    - name: Install Corepack
+      command: npm install --global corepack
+
+    - name: Has Yarn?
+      stat: 
+        path: /usr/bin/yarn
+      register: has_yarn
+
+    - name: Install Yarn
+      command: npm install --global yarn
+      when: has_yarn.stat.exists == False
+
+    - name: Update Yarn via corepack
+      command: corepack enable
+      when: has_yarn.stat.exists == False
+
+    - name: Install Astro
+      command: npm install --global astro
+
+    - name: Install Gatsby
+      command: npm install --global gatsby
+
+    - name: Has Nvim?
+      stat:
+        path: /opt/nvim-linux64/bin/nvim
+      register: has_nvim
+
+    - name: Install Nvim
+      command: bash -lc "cd /tmp; curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz; rm -rf /opt/nvim; tar -C /opt -xzf nvim-linux64.tar.gz; rm /tmp/nvim-linux64.tar.gz; ln -s /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim"
+      when: has_nvim.stat.exists == False
+
+    - name: Update and upgrade all packages to the latest version
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - software-properties-common
+
+    - name: Has tailwindcss cli?
+      stat:
+        path: /usr/local/bin/tailwindcss
+      register: has_tailwindcss
+
+    - name: Install tailwindcss
+      command: bash -lc "cd /tmp; curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.3/tailwindcss-linux-x64; chmod +x tailwindcss-linux-x64; mv tailwindcss-linux-x64 /usr/local/bin/tailwindcss"
+      when: has_tailwindcss.stat.exists == False
+
+    - name: Create directory for Docker's GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add Docker's official GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        keyring: /etc/apt/keyrings/docker.gpg
+        state: present
+
+    - name: Print architecture variables
+      ansible.builtin.debug:
+        msg: "Architecture: {{ ansible_architecture }}, Codename: {{ ansible_lsb.codename }}"
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ arch_mapping[ansible_architecture] | default(ansible_architecture) }}
+          signed-by=/etc/apt/keyrings/docker.gpg]
+          https://download.docker.com/linux/debian {{ ansible_lsb.codename }} stable
+        filename: docker
+        state: present
+
+    - name: Install Docker and related packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+    - name: Add Docker group
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Add user to Docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+
+    - name: Enable and start Docker services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - docker.service
+        - containerd.service

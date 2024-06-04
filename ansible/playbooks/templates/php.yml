@@ -1,0 +1,18 @@
+php_memory_limit: "256M"
+php_max_execution_time: "90"
+php_upload_max_filesize: "256M"
+php_source_configure_command: "--enable-fpm"
+php_webserver_daemon: "nginx"
+php_enable_apc: true
+php_packages:
+  - php
+  - php-cli
+  - php-common
+  - php-gd
+  - php-mbstring
+  - php-pdo
+  - php-xml
+  - php-mysql
+  - php-zip
+  - php-apcu
+  - php-curl

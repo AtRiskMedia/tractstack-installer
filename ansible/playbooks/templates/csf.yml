@@ -1,0 +1,16 @@
+csf_pignore:
+  - 'exe:/usr/sbin/nginx'
+  - 'exe:/usr/sbin/php-fpm8.2'
+  - 'exe:/usr/sbin/vnstatd'
+  - 'exe:/usr/lib/systemd/systemd-resolved'
+  - 'exe:/usr/lib/postfix/sbin/qmgr'
+  - 'exe:/usr/lib/postfix/sbin/pickup'
+  - 'exe:/usr/bin/node'
+  - 'user:mysql'
+  - 'user:t8k'
+
+csf_global_ini:
+  - option: TCP_IN
+    value: "22,80,443,4321:4341,7687,30000:65535"
+  - option: TCP_OUT
+    value: "20,21,22,25,37,43,53,80,123,443,873,953,4321:4341,7687,9418,30000:65535"

@@ -1,0 +1,181 @@
+---
+# assumes clean Debian install
+# install sudo, python3-pip
+# does not create SSL certs, but installs certbot and secrets file and cert.sh script
+# in /etc/ssh/sshd_config temporarily set PermitRootLogin yes
+# on first run use: ansible-playbook -u root -k build_server.yml 
+# on subsequent runs: ansible-playbook -u root build_server.yml
+- hosts: all
+  become: yes
+
+  roles:
+    - { role: likg.csf }
+
+  vars_files:
+    - templates/csf.yml
+
+  vars:
+    ME: 'adon'
+
+  handlers:
+    - name: Restart ssh
+      service: name=ssh state=restarted
+
+  tasks:
+    - name: Installing Security Update
+      apt: upgrade=safe update_cache=yes
+
+    - name: Install standard packages
+      apt:
+        name: ['vnstat', 'htop', 'rsync', 'zip', 'mutt', 'libwww-perl', 'locate', 'dnsutils', 'wget', 'curl', 'lnav', 'snapd', 'pwgen', 'vim']
+
+    - name: Install sql database packages
+      apt:
+        name: ['mariadb-server','python3-pymysql']
+
+    - name: Store db pwd
+      copy:
+        src: templates/.my.cnf
+        dest: /root/.my.cnf
+        mode: 0600
+
+    - name: start mariadb
+      service:
+        name: mariadb
+        enabled: true
+        state: started
+
+    - name: Creates folder for SSH keys
+      file:
+        path: /root/.ssh
+        state: directory
+
+    - name: generate SSH key
+      openssh_keypair:
+        path: "~/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+
+    - name: Set up multiple authorized keys
+      authorized_key:
+        user: root
+        state: present
+        key: '{{ item }}'
+      with_file:
+        - templates/public_keys
+
+    - name: Give me to sudoers
+      lineinfile: dest=/etc/sudoers
+                  regexp="{{ ME }} ALL"
+                  line="{{ ME }} ALL=(ALL) ALL"
+                  state=present
+
+    - name: Disallow root SSH access
+      lineinfile: dest=/etc/ssh/sshd_config
+                  regexp="^PermitRootLogin"
+                  line="PermitRootLogin prohibit-password"
+                  state=present
+      notify: Restart ssh
+
+    - name: Set issue message
+      copy:
+        src: templates/issue
+        dest: /etc/issue
+        mode: 0755
+
+    - name: Set issue message via net
+      copy:
+        src: templates/issue
+        dest: /etc/issue.net
+        mode: 0755
+
+    - name: Set message of the day welcome
+      copy:
+        src: templates/issue
+        dest: /etc/motd
+        mode: 0755
+
+          #    - name: Add CSF ip-tables logging block
+          #      copy:
+          #        src: templates/10-iptables.conf
+          #        dest: /etc/rsyslog.d
+          #        mode: 0644
+          #
+          #    - name: Restart rsyslog
+          #      ansible.builtin.service:
+          #        name: rsyslog
+          #        state: restarted
+          #        daemon_reload: yes
+
+    - name: Install the NTP daemon to synchronize the clocks to ms.
+      apt: name=ntp
+
+    - name: Make sure ntp is started, and is enabled on restart.
+      service: name=ntp state=started enabled=yes
+
+    - name: Set the timezone to the UTC
+      timezone: "name=UTC"
+
+    - name: Prepare certbot keystore
+      file: 
+        path: /root/.secrets/certbot
+        state: directory
+        recurse: yes
+        mode: 0600
+
+    - name: Install cloudflare secret key
+      copy:
+        src: templates/secret-certbot
+        dest: /root/.secrets/certbot/cloudflare.ini
+        mode: 0600
+
+    - name: Create root scripts datastore
+      file: 
+        path: /root/scripts
+        state: directory
+        recurse: yes
+        mode: 0600
+
+    - name: Install certbot cert.sh script
+      copy:
+        src: templates/cert.sh
+        dest: /root/scripts/cert.sh
+        mode: 0700
+
+    - name: Install certbot core
+      command: /usr/bin/snap install core
+
+    - name: Refresh certbot core
+      command: /usr/bin/snap refresh core
+
+    - name: Install certbot snap
+      community.general.snap:
+        name: certbot
+        classic: yes
+
+    - name: Set confinement for certbot
+      command: /usr/bin/snap set certbot trust-plugin-with-root=ok
+
+    - name: Install certbot snap
+      community.general.snap:
+        name: certbot
+        classic: yes
+
+    - name: Install certbot cloudflare snap
+      community.general.snap:
+        name: certbot-dns-cloudflare
+        classic: yes
+
+    - name: Is certbot linked in bin path?
+      stat:
+        path: /usr/bin/certbot
+      register: stat_result
+
+    - name: Link certbot to bin path
+      file:
+        src: /snap/bin/certbot
+        dest: /usr/bin/certbot
+        state: link
+      when: not stat_result.stat.exists
