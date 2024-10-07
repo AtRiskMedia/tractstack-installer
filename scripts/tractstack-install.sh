@@ -125,6 +125,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   cd /home/"$NAME"/srv/public_html
   ln -s ../../tractstack-concierge/api api
+  cd - >/dev/null 2>&1
 else
   echo ""
   echo Installing Tract Stack as target: "$TARGET" -- "$NAME"
@@ -152,6 +153,7 @@ else
   chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   cd /home/t8k/"$TARGET"/"$NAME"/srv/public_html
   ln -s ../../tractstack-concierge/api api
+  cd - >/dev/null 2>&1
 fi
 
 echo ""
