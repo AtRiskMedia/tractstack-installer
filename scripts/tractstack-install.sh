@@ -124,7 +124,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   cd /home/"$NAME"/srv/public_html
-  ln -s ../../tractstack-concierge/api api
+  ln -s ../tractstack-concierge/api api
   cd - >/dev/null 2>&1
 else
   echo ""
@@ -152,7 +152,7 @@ else
   chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   cd /home/t8k/"$TARGET"/"$NAME"/srv/public_html
-  ln -s ../../tractstack-concierge/api api
+  ln -s ../tractstack-concierge/api api
   cd - >/dev/null 2>&1
 fi
 
