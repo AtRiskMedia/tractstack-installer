@@ -3,22 +3,21 @@
 TARGET=$2
 echo "$TARGET"
 if [[ -z "$TARGET" ]]; then
-	NAME=$1
-	INSTALL_USER=$1
-	ID="$1"
+  NAME=$1
+  INSTALL_USER=$1
+  ID="$1"
 elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
-	NAME="$2"_"$1"
-	INSTALL_USER="t8k"
-	ID="$2"-"$1"
+  NAME="$2"_"$1"
+  INSTALL_USER="t8k"
+  ID="$2"-"$1"
 else
-	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
-	echo Usage: sudo ./tractstack-uninstall.sh username target
-	echo ELSE for user install... Usage: sudo ./tractstack-uninstall.sh username
-	echo ""
-	exit 1
+  echo To uninstall Tract Stack from a target environment, please specific features or sandbox
+  echo Usage: sudo ./tractstack-uninstall.sh username target
+  echo ELSE for user install... Usage: sudo ./tractstack-uninstall.sh username
+  echo ""
+  exit 1
 fi
 
-DB_NAME=t8k_"$NAME"
 CONCIERGE_DB_NAME=concierge_"$NAME"
 
 blue='\033[0;34m'
@@ -33,51 +32,51 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}All-in-one publishing platform to grow your content into a business"
+echo -e "${reset}no-code website maker for advocacy and evanglism"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
 if [ "$NAME" == "t8k" ]; then
-	echo "Cannot uninstall primary t8k user; did you mean to?"
-	exit
+  echo "Cannot uninstall primary t8k user; did you mean to?"
+  exit
 fi
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
-	if [ ! -d /home/"$NAME" ]; then
-		echo User "$NAME" does not already exist.
-		echo ""
-		exit 1
-	fi
+  if [ ! -d /home/"$NAME" ]; then
+    echo User "$NAME" does not already exist.
+    echo ""
+    exit 1
+  fi
 else
-	if [ ! -d /home/t8k/"$TARGET"/"$NAME" ]; then
-		echo User "$NAME" does not already exist in "$TARGET".
-		echo ""
-		exit 1
-	fi
+  if [ ! -d /home/t8k/"$TARGET"/"$NAME" ]; then
+    echo User "$NAME" does not already exist in "$TARGET".
+    echo ""
+    exit 1
+  fi
 fi
 
 if [ "$NAME" = "" ]; then
-	echo To uninstall Tract Stack provide linux user name
-	echo Usage: sudo ./tractstack-uninstall.sh username
-	echo ""
-	echo To uninstall Tract Stack from a target environment, please specific features or sandbox
-	echo Usage: sudo ./tractstack-uninstall.sh username target
-	echo ""
-	exit 1
+  echo To uninstall Tract Stack provide linux user name
+  echo Usage: sudo ./tractstack-uninstall.sh username
+  echo ""
+  echo To uninstall Tract Stack from a target environment, please specific features or sandbox
+  echo Usage: sudo ./tractstack-uninstall.sh username target
+  echo ""
+  exit 1
 fi
 
 if [ "$USER" != root ]; then
-	echo Must provide sudo privileges
-	echo ""
-	exit 1
+  echo Must provide sudo privileges
+  echo ""
+  exit 1
 fi
 
-RUNNING=$(docker ps -q --filter ancestor=tractstack-frontend-"$ID")
+RUNNING=$(docker ps -q --filter ancestor=tractstack-storykeep-"$ID")
 if [ ! -z "$RUNNING" ]; then
-	echo ""
-	echo Stopping Docker
-	sudo docker stop "$RUNNING"
-	sudo docker rm "$RUNNING"
+  echo ""
+  echo Stopping Docker
+  sudo docker stop "$RUNNING"
+  sudo docker rm "$RUNNING"
 fi
 
 echo ""
@@ -86,23 +85,19 @@ cp /home/t8k/.env /home/t8k/.env.bak
 grep -v "^PORT_""$NAME" /home/t8k/.env.bak >/home/t8k/.env
 
 echo ""
-echo Dropping drupal database and user: t8k_"$NAME"
-mysql -e "DROP DATABASE ${DB_NAME};" >/dev/null 2>&1
-mysql -e "DROP USER ${DB_NAME}@localhost;" >/dev/null 2>&1
-echo ""
 echo Dropping Concierge database: concierge_"$NAME"
 mysql -e "DROP DATABASE ${CONCIERGE_DB_NAME};" >/dev/null 2>&1
 mysql -e "FLUSH PRIVILEGES;" >/dev/null 2>&1
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
-	echo ""
-	echo Removing Tract Stack for user: "$NAME"
-	deluser "$NAME"
-	rm -rf /home/"$NAME"
+  echo ""
+  echo Removing Tract Stack for user: "$NAME"
+  deluser "$NAME"
+  rm -rf /home/"$NAME"
 else
-	echo ""
-	echo Removing Tract Stack for user: "$NAME" in "$TARGET"
-	rm -rf /home/t8k/"$TARGET"/"$NAME"
+  echo ""
+  echo Removing Tract Stack for user: "$NAME" in "$TARGET"
+  rm -rf /home/t8k/"$TARGET"/"$NAME"
 fi
 
 #echo ""
@@ -110,31 +105,31 @@ fi
 #rm -rf /etc/letsencrypt/*/"$NAME".tractstack.com*
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
-	echo ""
-	echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
-	rm /etc/nginx/sites-available/storykeep."$NAME".conf
-	rm /etc/nginx/sites-available/t8k."$NAME".conf
-	rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
-	rm /etc/nginx/sites-enabled/t8k."$NAME".conf
-	if ! nginx -t 2>/dev/null; then
-		echo ""
-		echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
-		echo ""
-		exit 1
-	fi
+  echo ""
+  echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
+  rm /etc/nginx/sites-available/storykeep."$NAME".conf
+  rm /etc/nginx/sites-available/t8k."$NAME".conf
+  rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
+  rm /etc/nginx/sites-enabled/t8k."$NAME".conf
+  if ! nginx -t 2>/dev/null; then
+    echo ""
+    echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
+    echo ""
+    exit 1
+  fi
 else
-	echo ""
-	echo Removing nginx config for "$TARGET"."$1".tractstack.com and "$TARGET".storykeep."$1".tractstack.com
-	rm /etc/nginx/sites-available/"$TARGET".storykeep."$1".conf
-	rm /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
-	rm /etc/nginx/sites-enabled/"$TARGET".storykeep."$1".conf
-	rm /etc/nginx/sites-enabled/"$TARGET".t8k."$1".conf
-	if ! nginx -t 2>/dev/null; then
-		echo ""
-		echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
-		echo ""
-		exit 1
-	fi
+  echo ""
+  echo Removing nginx config for "$TARGET"."$1".tractstack.com and "$TARGET".storykeep."$1".tractstack.com
+  rm /etc/nginx/sites-available/"$TARGET".storykeep."$1".conf
+  rm /etc/nginx/sites-available/"$TARGET".t8k."$1".conf
+  rm /etc/nginx/sites-enabled/"$TARGET".storykeep."$1".conf
+  rm /etc/nginx/sites-enabled/"$TARGET".t8k."$1".conf
+  if ! nginx -t 2>/dev/null; then
+    echo ""
+    echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
+    echo ""
+    exit 1
+  fi
 fi
 service nginx reload
 

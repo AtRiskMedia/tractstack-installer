@@ -1,5 +1,0 @@
-
-$settings['trusted_host_patterns'] = [
-  '^features\.ZZZZZ\.tractstack\.com$',
-  '^features\.storykeep\.ZZZZZ\.tractstack\.com$',
-];

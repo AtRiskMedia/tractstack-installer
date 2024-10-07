@@ -1,5 +1,7 @@
 # Tract Stack installer scripts
 
+no-code website maker for advocacy and evanglism
+
 Visit [Tract Stack docs](https://tractstack.org) for more info
 
 ## Ansible

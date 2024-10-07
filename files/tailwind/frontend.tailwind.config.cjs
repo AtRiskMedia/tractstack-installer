@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["tailwind.whitelist"],
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}"],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
   theme: {
     screens: {
       xs: "0px",
@@ -19,21 +22,37 @@ module.exports = {
         8: '108',
         9: '109',
         10: '110',
+        20: '210',
+        30: '310',
+        40: '410',
+        50: '510',
         70: '700',
         90: '900',
         99: '999',
+        101: '1001',
+        102: '1002',
+        103: '1003',
+        104: '1004',
+        105: '1005',
+        999: '9999',
       },
       colors: {
         mywhite: '#fcfcfc',
         myoffwhite: '#e3e3e3',
-        myallwhite: '#ffffff',
         mylightgrey: '#a7b1b7',
         myblue: '#293f58',
         mygreen: '#c8df8c',
         myorange: '#f58333',
         mydarkgrey: '#393d34',
         myblack: '#10120d',
-        myallblack: '#000000',
+        'brand-1': 'var(--brand-1)',
+        'brand-2': 'var(--brand-2)',
+        'brand-3': 'var(--brand-3)',
+        'brand-4': 'var(--brand-4)',
+        'brand-5': 'var(--brand-5)',
+        'brand-6': 'var(--brand-6)',
+        'brand-7': 'var(--brand-7)',
+        'brand-8': 'var(--brand-8)',
       },
       fontSize: {
         rxs: 'calc(var(--scale) * 0.75rem)',
@@ -51,12 +70,19 @@ module.exports = {
         r9xl: 'calc(var(--scale) * 8rem)',
       },
       animation: {
+        fadeOut: 'fadeOut 1s forwards',
         fadeIn: 'fadeIn 1s ease-in',
         fadeInUp: 'fadeInUp 1s ease-in',
         fadeInRight: 'fadeInRight 1s ease-in',
         fadeInLeft: 'fadeInLeft 1s ease-in',
+        bounceIn: 'bounce 1s ease-in-out 4.5',
+        wig: 'wiggle 1s ease-in-out infinite',
       },
       keyframes: {
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
         fadeIn: {
           '0%': { opacity: '.25' },
           '100%': { opacity: '1' },
@@ -72,6 +98,14 @@ module.exports = {
         fadeInLeft: {
           '0%': { transform: 'translate3d(-10px,0, 0)', opacity: '.25' },
           '100%': { transform: 'translate3d(0, 0, 0)', opacity: '1' },
+        },
+        wiggle: {
+          '0%, 100%': {
+            transform: 'translateX(3%)'
+          },
+          '50%': {
+            transform: 'translateX(0)'
+          },
         },
       },
       lineHeight: {
@@ -98,14 +132,22 @@ module.exports = {
         r20: 'calc(var(--scale) * 5rem)',
       },
       fontFamily: {
-        action: ['Font-Action', 'Georgia', 'Times New Roman', 'Times', 'serif'],
+        action: [
+          'var(--font-action)',
+          'Inter',
+          'Georgia',
+          'Times New Roman',
+          'Times',
+          'serif'
+        ],
         main: [
-          'Font-Main',
+          'var(--font-main)',
+          'Inter',
           'Arial',
           'Helvetica Neue',
           'Helvetica',
-          'sans-serif',
-        ],
+          'sans-serif'
+        ], 
       },
     },
   },

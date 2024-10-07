@@ -2,7 +2,7 @@
 Description="Trigger build process for Tract Stack"
 
 [Path]
-PathModified=/home/t8k/features/ZZZZZ/releases/watch
+PathModified=/home/t8k/features/ZZZZZ/watch
 Unit=t8k-features_ZZZZZ.service
 
 [Install]
