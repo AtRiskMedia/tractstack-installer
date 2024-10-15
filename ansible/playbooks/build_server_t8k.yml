@@ -19,7 +19,11 @@
   tasks:
     - name: Install needed packages
       apt:
-        name: ['git']
+        name:
+          - git
+          - imagemagick
+          - libmagickwand-dev
+        state: present
 
     - name: Install Corepack
       command: npm install --global corepack

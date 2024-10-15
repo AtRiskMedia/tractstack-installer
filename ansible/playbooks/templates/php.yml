@@ -16,3 +16,4 @@ php_packages:
   - php-zip
   - php-apcu
   - php-curl
+  - php-imagick
