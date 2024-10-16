@@ -71,6 +71,7 @@ TARGET=$(cat /home/"$USR"/"$OVERRIDE"watch/build.lock)
 if [[ "$TARGET" = "tailwind" || "$1" = "tailwind" ]]; then
   RAN=true
 fi
+
 echo ""
 echo -e "re-generating your ${white}styles${reset}"
 cd /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles
@@ -128,6 +129,16 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
   fi
   echo -e "${blue}done.${reset}"
 fi
+
+if [[ "$TARGET" = "restorePoint" ]]; then
+  RAN=true
+  echo ""
+  echo -e "saving ${white}$SITENAME restore point${reset}"
+  echo not yet implemented
+  echo -e "${blue}done.${reset}"
+fi
+
+
 
 if [ "$RAN" = false ]; then
   echo Usage: ./build {target} where target = front, back, all or *key

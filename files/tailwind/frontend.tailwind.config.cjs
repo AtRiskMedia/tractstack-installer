@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["tailwind.whitelist"],
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
   theme: {
     screens: {
       xs: "0px",

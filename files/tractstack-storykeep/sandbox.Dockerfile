@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install necessary dependencies for building the application
 RUN apt-get update && \
-    apt-get install -y openssl python3 make g++ && \
+    apt-get install -y openssl python3 make g++ git && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy only the package.json and yarn.lock to leverage caching
@@ -14,6 +14,9 @@ COPY package.json yarn.lock .yarnrc.yml ./
 RUN corepack enable && \
     yarn set version stable && \
     yarn install
+
+# Add node_modules/.bin to PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 
 # Copy the rest of the application files
 COPY . .
