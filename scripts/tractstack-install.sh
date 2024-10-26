@@ -109,15 +109,19 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   cp ./build.sh /home/"$NAME"/scripts/
   sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
   rm /home/"$NAME"/scripts/tractstack-home-init.sh
+  mkdir /home/"$NAME"/srv/tractstack-concierge/api/images
+  mkdir /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
+  cp ../files/images/paneDesigns/* /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
+  chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/images
+  chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/images
+  chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
+  chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns/*
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend
-  mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
   touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
   touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css.new
-  touch /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
   touch /home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
-  cp ../files/tailwind/storykeep.tailwind.config.js /home/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.config.js
   cp ../files/tailwind/frontend.tailwind.config.cjs /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.config.cjs
   chown -R "$NAME":"$NAME" /home/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
@@ -138,15 +142,19 @@ else
   cp ./build.sh /home/"t8k/"$TARGET"/$NAME"/scripts/
   sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-home-init.sh '"$NAME"' '"$TARGET"
   rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-home-init.sh
+  mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
+  mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/paneDesigns
+  cp ../files/images/paneDesigns/* /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
+  chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
+  chmod 775 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
+  chmod 775 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
+  chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns/*
   mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
   mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend
-  mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep
   touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css
   touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend.css.new
-  touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep.css
   touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
-  cp ../files/tailwind/storykeep.tailwind.config.js /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/storykeep/tailwind.config.js
   cp ../files/tailwind/frontend.tailwind.config.cjs /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.config.cjs
   chown -R "$NAME":"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [[ "$1" == "tailwind" || "$1" == "front" || "$1" == "back" || "$1" == "all" || -z "$1" ]]; then
+if [[ "$1" == "tailwind" || "$1" == "front" || "$1" == "all" || -z "$1" ]]; then
   echo Building "$1"
   echo ""
 else
   echo Usage:
   echo sudo ./build.sh 1 2 3
-  echo required: 1 = tailwind, front, back, all
+  echo required: 1 = tailwind, front, all
   echo optional: 2 = username
   echo optional: 3 = features \| sandbox \(or blank\)
   echo ""
@@ -75,12 +75,12 @@ fi
 echo ""
 echo -e "re-generating your ${white}styles${reset}"
 cd /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles
-if [ ! -s /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles/storykeep.css ]; then
-  echo Generating css for storykeep
-  cd storykeep
-  tailwindcss -m -o ../storykeep.css
-  cd ..
-fi
+#if [ ! -s /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles/storykeep.css ]; then
+#  echo Generating css for storykeep
+#  cd storykeep
+#  tailwindcss -m -o ../storykeep.css
+#  cd ..
+#fi
 echo Generating css for frontend
 cd frontend
 tailwindcss -m -o ../frontend.css.new
@@ -138,10 +138,8 @@ if [[ "$TARGET" = "restorePoint" ]]; then
   echo -e "${blue}done.${reset}"
 fi
 
-
-
 if [ "$RAN" = false ]; then
-  echo Usage: ./build {target} where target = front, back, all or *key
+  echo Usage: ./build {target} where target = front, all or *key
 else
   rm /home/"$USR"/"$OVERRIDE"watch/build.lock 2>/dev/null || true
 fi
