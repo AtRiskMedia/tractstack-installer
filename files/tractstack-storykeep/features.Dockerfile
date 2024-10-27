@@ -54,8 +54,8 @@ COPY --from=build /app/node_modules ./node_modules
 
 # Set environment variables and expose port
 ENV HOST=0.0.0.0
-ENV PORT=4323
-EXPOSE 4323
+ENV PORT=ZZZZY
+EXPOSE ZZZZY
 
 # Command to run the application
 CMD ["node", "./dist/server/entry.mjs"]
