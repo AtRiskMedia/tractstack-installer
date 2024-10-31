@@ -19,6 +19,7 @@ else
 fi
 
 CONCIERGE_DB_NAME=concierge_"$NAME"
+CONCIERGE_DB_USER=t8k_"$NAME"
 
 blue='\033[0;34m'
 brightblue='\033[1;34m'
@@ -88,6 +89,8 @@ echo ""
 echo Dropping Concierge database: concierge_"$NAME"
 mysql -e "DROP DATABASE ${CONCIERGE_DB_NAME};" >/dev/null 2>&1
 mysql -e "DROP USER '${CONCIERGE_DB_USER}'@'localhost';" >/dev/null 2>&1
+echo "DROP DATABASE ${CONCIERGE_DB_NAME};"
+echo "DROP USER '${CONCIERGE_DB_USER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;" >/dev/null 2>&1
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
