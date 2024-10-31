@@ -127,6 +127,13 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   echo '{"v":0}' >/home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
   chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+  mkdir /home/"$NAME"/srv/tractstack-concierge/api/aai
+  chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/aai
+  chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/aai
+  touch /home/"$NAME"/srv/tractstack-concierge/api/build.json
+  chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/build.json
+  echo '{"status":"none","lastBuild":0}' >/home/"$NAME"/srv/tractstack-concierge/api/build.json
+  chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/build.json
   mkdir -p /home/"$NAME"/srv/public_html/storykeep
   cd /home/"$NAME"/srv/public_html/storykeep
   ln -s ../../tractstack-concierge/api api

@@ -50,6 +50,14 @@ WWW_STORYKEEP="storykeep"
 NOW=$(date +%s)
 RAN=false
 
+# Get current lastBuild from existing build.json if it exists
+if [ -f /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/build.json ]; then
+  LAST_BUILD=$(cat /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/build.json | grep -o '"lastBuild":[0-9]*' | grep -o '[0-9]*')
+else
+  LAST_BUILD=$NOW
+fi
+echo "{\"status\":\"building\",\"lastBuild\":$LAST_BUILD,\"now\":$NOW}" >/home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/build.json
+
 blue='\033[0;34m'
 brightblue='\033[1;34m'
 white='\033[1;37m'
@@ -143,3 +151,6 @@ if [ "$RAN" = false ]; then
 else
   rm /home/"$USR"/"$OVERRIDE"watch/build.lock 2>/dev/null || true
 fi
+
+# Update build status on success
+echo "{\"status\":\"active\",\"lastBuild\":$NOW}" >/home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/build.json
