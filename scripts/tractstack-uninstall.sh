@@ -87,6 +87,7 @@ grep -v "^PORT_""$NAME" /home/t8k/.env.bak >/home/t8k/.env
 echo ""
 echo Dropping Concierge database: concierge_"$NAME"
 mysql -e "DROP DATABASE ${CONCIERGE_DB_NAME};" >/dev/null 2>&1
+mysql -e "DROP USER '${CONCIERGE_DB_USER}'@'localhost';" >/dev/null 2>&1
 mysql -e "FLUSH PRIVILEGES;" >/dev/null 2>&1
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
