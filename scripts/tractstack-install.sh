@@ -283,6 +283,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/.env
   chown "$NAME":www-data /home/"$NAME"/watch
   chmod 660 /home/"$NAME"/src/tractstack-storykeep/.env
+  chmod 770 /home/"$NAME"/src/tractstack-storykeep/public/styles
+  chmod 660 /home/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
   chmod 660 /home/"$NAME"/srv/tractstack-concierge/.env
   chmod 770 /home/"$NAME"/watch
 
@@ -323,6 +325,8 @@ else
   chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/watch
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
+  chmod 770 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles
+  chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/watch
 
