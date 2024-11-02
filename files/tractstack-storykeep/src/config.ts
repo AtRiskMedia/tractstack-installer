@@ -1,9 +1,9 @@
 import type { Site } from "./types";
 
 export const SITE: Site = {
-  website: "https://ZZZZZ.tractstack.com/", // replace this with your domain
+  website: "https://ZZZZZ.tractstack.com/",
   author: "At Risk Media",
-  desc: "All-in-one publishing platform to grow your content into a business",
+  desc: "no-code website builder and content marketing platform",
   title: "TractStack",
   ogImage: "custom/og.png",
   ogLogo: "custom/logo.png",

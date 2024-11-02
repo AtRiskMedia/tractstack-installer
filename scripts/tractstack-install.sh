@@ -268,6 +268,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   cp -r ../files/tractstack-storykeep/public /home/"$NAME"/src/tractstack-storykeep/
   cp -r ../files/tractstack-storykeep/src/custom /home/"$NAME"/src/tractstack-storykeep/src/
   cp ../files/conf/concierge.env.incl /home/"$NAME"/srv/tractstack-concierge/.env
+  cp /home/"$NAME"/src/tractstack-storykeep/public/logo.png /home/"$NAME"/src/tractstack-storykeep/public/custom/og.png
+  cp /home/"$NAME"/src/tractstack-storykeep/public/og.png /home/"$NAME"/src/tractstack-storykeep/public/custom/og.png
   sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/.env
   sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
   sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
@@ -285,6 +287,9 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chmod 660 /home/"$NAME"/src/tractstack-storykeep/.env
   chmod 770 /home/"$NAME"/src/tractstack-storykeep/public/styles
   chmod 660 /home/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
+  chmod 770 /home/"$NAME"/src/tractstack-storykeep/public/custom
+  chmod 660 /home/"$NAME"/src/tractstack-storykeep/public/custom/logo.png
+  chmod 660 /home/"$NAME"/src/tractstack-storykeep/public/custom/og.png
   chmod 660 /home/"$NAME"/srv/tractstack-concierge/.env
   chmod 770 /home/"$NAME"/watch
 
@@ -312,6 +317,8 @@ else
   cp -r ../files/tractstack-storykeep/public /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/
   cp -r ../files/tractstack-storykeep/src/custom /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/src/
   cp ../files/conf/"$TARGET".concierge.env.incl /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
+  cp /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/logo.png /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom/logo.png
+  cp /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/og.png /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom/og.png
   sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
   sed -i -e "$SED_PORT" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
@@ -327,6 +334,9 @@ else
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
+  chmod 770 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom
+  chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom/og.png
+  chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom/logo.png
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/watch
 
