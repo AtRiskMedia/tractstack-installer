@@ -5,8 +5,6 @@ export const SITE: Site = {
   author: "At Risk Media",
   desc: "All-in-one publishing platform to grow your content into a business",
   title: "TractStack",
-  ogImage: "custom/og.png",
-  ogLogo: "custom/logo.png",
 };
 
 export const LOCALE = {
