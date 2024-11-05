@@ -19,7 +19,6 @@ if [[ -z "$TARGET" ]]; then
   git clone https://github.com/AtRiskMedia/tractstack-storykeep.git
   cd tractstack-storykeep
   echo Using "api" branch pre-rc
-  git checkout api
   cd ~/srv/
   echo Installing Concierge
   git clone https://github.com/AtRiskMedia/tractstack-concierge.git
@@ -46,7 +45,6 @@ elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
   git clone https://github.com/AtRiskMedia/tractstack-storykeep.git
   cd tractstack-storykeep
   echo Using "api" branch pre-rc
-  git checkout api
   echo done.
   echo ""
   cd ~/"$TARGET"/"$NAME"/srv
