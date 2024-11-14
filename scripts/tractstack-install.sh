@@ -126,7 +126,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chown -R "$NAME":"$NAME" /home/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
   chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
-  chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/aai
   chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/aai
   chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/aai
@@ -166,7 +165,6 @@ else
   chown -R "$NAME":"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
   chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
-  chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   mkdir -p /home/t8k/"$TARGET"/"$NAME"/srv/public_html/storykeep
   cd /home/t8k/"$TARGET"/"$NAME"/srv/public_html/storykeep
   ln -s ../../tractstack-concierge/api api
