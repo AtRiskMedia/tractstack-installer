@@ -45,8 +45,8 @@ else
 fi
 
 SITENAME="tractstack"
-WWW_TRACTSTACK="tractstack"
-WWW_STORYKEEP="storykeep"
+#WWW_TRACTSTACK="tractstack"
+#WWW_STORYKEEP="storykeep"
 NOW=$(date +%s)
 RAN=false
 
@@ -70,7 +70,7 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_\__ ${blue}\ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}no-code website maker for advocacy and evanglism"
+echo -e "${reset}no-code website builder and content marketing platform"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
@@ -83,12 +83,6 @@ fi
 echo ""
 echo -e "re-generating your ${white}styles${reset}"
 cd /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles
-#if [ ! -s /home/"$USR"/"$OVERRIDE"srv/tractstack-concierge/api/styles/storykeep.css ]; then
-#  echo Generating css for storykeep
-#  cd storykeep
-#  tailwindcss -m -o ../storykeep.css
-#  cd ..
-#fi
 echo Generating css for frontend
 cd frontend
 tailwindcss -m -o ../frontend.css.new

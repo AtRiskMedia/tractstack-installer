@@ -21,7 +21,7 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}no-code website maker for advocacy and evanglism"
+echo -e "${reset}no-code website builder and content marketing platform"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
@@ -54,10 +54,13 @@ fi
 
 echo ""
 echo Upgrading Tract Stack as user: "$NAME"
+echo *** must implement upgrade of tractstack-storykeep via tractstack-starter
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  sudo -H -u "$NAME" bash -c 'cd ~/src/tractstack-storykeep; git pull'
+  #sudo -H -u "$NAME" bash -c 'cd ~/src/tractstack-storykeep; git pull'
+  sudo -H -u "$NAME" bash -c 'cd ~/src/tractstack-starter; git pull'
   sudo -H -u "$NAME" bash -c 'cd ~/srv/tractstack-concierge; git pull'
 else
-  sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/src/tractstack-storykeep; git pull'
+  #sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/src/tractstack-storykeep; git pull'
+  sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/src/tractstack-starter; git pull'
   sudo -H -u "$NAME" bash -c 'cd ~/"$TARGET"/"$USER"/srv/tractstack-concierge; git pull'
 fi

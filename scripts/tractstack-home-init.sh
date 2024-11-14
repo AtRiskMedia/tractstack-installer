@@ -15,12 +15,21 @@ if [[ -z "$TARGET" ]]; then
 
   echo Cloning repos.
   cd ~/src/
-  echo Installing Storykeep
-  git clone https://github.com/AtRiskMedia/tractstack-storykeep.git
-  cd tractstack-storykeep
-  echo Using "api" branch pre-rc
+  echo Installing Tract Stack
+  corepack enable
+  yes | COREPACK_ENABLE_STRICT=0 corepack prepare pnpm@9.12.3 --activate
+  pnpm create astro@latest tractstack-storykeep \
+    --template AtRiskMedia/tractstack-starter/template \
+    --typescript strict \
+    --install \
+    --package-manager pnpm \
+    --no-git \
+    --skip-houston
+  cd ~/src/
+  echo Installing Code Base
+  git clone https://github.com/AtRiskMedia/tractstack-starter.git
   cd ~/srv/
-  echo Installing Concierge
+  echo Installing your Concierge
   git clone https://github.com/AtRiskMedia/tractstack-concierge.git
   cd tractstack-concierge
   composer install
@@ -41,14 +50,23 @@ elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 
   echo Cloning repos.
   cd ~/"$TARGET"/"$NAME"/src
-  echo Installing Storykeep
-  git clone https://github.com/AtRiskMedia/tractstack-storykeep.git
-  cd tractstack-storykeep
-  echo Using "api" branch pre-rc
+  echo Installing Tract Stack
+  corepack enable
+  yes | COREPACK_ENABLE_STRICT=0 corepack prepare pnpm@9.12.3 --activate
+  pnpm create astro@latest tractstack-storykeep \
+    --template AtRiskMedia/tractstack-starter/template \
+    --typescript strict \
+    --install \
+    --package-manager pnpm \
+    --no-git \
+    --skip-houston
   echo done.
-  echo ""
+  cd ~/"$TARGET"/"$NAME"/src
+  echo Installing Code Base
+  git clone https://github.com/AtRiskMedia/tractstack-starter.git
+  echo done.
   cd ~/"$TARGET"/"$NAME"/srv
-  echo Installing Concierge
+  echo Installing your Concierge
   git clone https://github.com/AtRiskMedia/tractstack-concierge.git
   cd tractstack-concierge
   composer install

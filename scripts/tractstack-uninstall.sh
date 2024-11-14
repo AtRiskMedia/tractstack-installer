@@ -33,7 +33,7 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}no-code website maker for advocacy and evanglism"
+echo -e "${reset}no-code website builder and content marketing platform"
 echo -e "${white}by At Risk Media"
 echo -e "${reset}"
 
