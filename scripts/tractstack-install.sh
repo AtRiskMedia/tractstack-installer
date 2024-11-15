@@ -125,7 +125,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   cp ../files/tailwind/frontend.tailwind.config.cjs /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.config.cjs
   chown -R "$NAME":"$NAME" /home/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/"$NAME"/srv/tractstack-concierge/api/styles/v.json
-  chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+  chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+  chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/aai
   chown "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/aai
   chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/aai
@@ -164,7 +165,8 @@ else
   cp ../files/tailwind/frontend.tailwind.config.cjs /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.config.cjs
   chown -R "$NAME":"$NAME" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
   echo '{"v":0}' >/home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/v.json
-  chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+  chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
+  chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
   mkdir -p /home/t8k/"$TARGET"/"$NAME"/srv/public_html/storykeep
   cd /home/t8k/"$TARGET"/"$NAME"/srv/public_html/storykeep
   ln -s ../../tractstack-concierge/api api
@@ -267,7 +269,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/.env
   sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
   sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
-  touch /home/"$NAME"/src/tractstack-storykeep/tailwind.whitelist
   chown "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/.env
   chown "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/Dockerfile
   chown -R "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/src/custom
