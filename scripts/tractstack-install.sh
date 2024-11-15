@@ -110,12 +110,8 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
   rm /home/"$NAME"/scripts/tractstack-home-init.sh
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/images
-  mkdir /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
-  cp ../files/images/paneDesigns/* /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
   chown -R "$NAME":www-data /home/"$NAME"/srv/tractstack-concierge/api/images
   chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/images
-  chmod 775 /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
-  chmod 664 /home/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns/*
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles
   mkdir /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend
   touch /home/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
@@ -150,12 +146,8 @@ else
   sudo -H -u "$INSTALL_USER" bash -c '~/'"$TARGET"/"$NAME"'/scripts/tractstack-home-init.sh '"$NAME"' '"$TARGET"
   rm /home/t8k/"$TARGET"/"$NAME"/scripts/tractstack-home-init.sh
   mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
-  mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/paneDesigns
-  cp ../files/images/paneDesigns/* /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
   chown -R "$NAME":www-data /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
   chmod 775 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images
-  chmod 775 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns
-  chmod 664 /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/images/paneDesigns/*
   mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles
   mkdir /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend
   touch /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/api/styles/frontend/tailwind.whitelist
