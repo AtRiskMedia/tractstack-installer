@@ -302,11 +302,10 @@ else
   cp ../files/conf/"$TARGET".concierge.env.incl /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   cp ../files/conf/"$TARGET".storykeep.env.incl /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   cp ../files/tractstack-storykeep/"$TARGET".Dockerfile /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
+  sed -i -e "$SED2" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
   sed -i -e "$SED_PORT" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
-  sed -i -e "$SED" /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/src/config.ts
-  sed -i -e "$SED2" /home/t8k/"$TARGET"/"$NAME"/srv/tractstack-concierge/.env
   chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   chown t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/Dockerfile
   chown -R t8k:www-data /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/src/custom
