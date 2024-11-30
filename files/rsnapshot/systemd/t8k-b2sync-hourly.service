@@ -1,0 +1,8 @@
+[Unit]
+Description=t8k hourly B2 backup sync service
+After=t8k-backup-hourly.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/t8k/tractstack-installer/scripts/t8k-b2sync.sh hourly
+User=t8k

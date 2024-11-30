@@ -1,0 +1,11 @@
+[Unit]
+Description=t8k hourly B2 backup sync timer
+
+[Timer]
+OnCalendar=hourly
+# Run 15 minutes after the hourly backup
+OnCalendar=*:15
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=t8k monthly B2 backup sync timer
+
+[Timer]
+OnCalendar=monthly
+# Run at 00:45 on the 1st of each month
+OnCalendar=*-*-01 00:45:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

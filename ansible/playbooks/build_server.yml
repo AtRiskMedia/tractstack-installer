@@ -27,7 +27,7 @@
 
     - name: Install standard packages
       apt:
-        name: ['vnstat', 'htop', 'rsync', 'zip', 'mutt', 'libwww-perl', 'locate', 'dnsutils', 'wget', 'curl', 'lnav', 'snapd', 'pwgen', 'vim', 'rsnapshot']
+        name: ['vnstat', 'htop', 'rsync', 'zip', 'mutt', 'libwww-perl', 'locate', 'dnsutils', 'wget', 'curl', 'lnav', 'snapd', 'pwgen', 'vim', 'rsnapshot','rclone']
 
     - name: Install sql database packages
       apt:

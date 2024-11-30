@@ -1,0 +1,11 @@
+[Unit]
+Description=t8k weekly B2 backup sync timer
+
+[Timer]
+OnCalendar=weekly
+# Run at 00:30 on Mondays
+OnCalendar=Mon *-*-* 00:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

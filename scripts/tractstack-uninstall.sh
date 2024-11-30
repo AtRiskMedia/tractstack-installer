@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ENHANCED_BACKUPS=true
+
 TARGET=$2
 echo "$TARGET"
 if [[ -z "$TARGET" ]]; then
@@ -136,6 +138,32 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
     rm -f /etc/systemd/system/t8k-mysql-backup*
     # Remove rsnapshot config
     rm -f /etc/rsnapshot.conf
+  fi
+
+  echo ""
+  echo "Removing B2 sync systemd units"
+  if [ "$ENHANCED_BACKUPS" = true ]; then
+      systemctl stop t8k-b2sync-hourly.timer
+      systemctl disable t8k-b2sync-hourly.timer
+      systemctl stop t8k-b2sync-daily.timer
+      systemctl disable t8k-b2sync-daily.timer
+      systemctl stop t8k-b2sync-weekly.timer
+      systemctl disable t8k-b2sync-weekly.timer
+      systemctl stop t8k-b2sync-monthly.timer
+      systemctl disable t8k-b2sync-monthly.timer
+      rm -f /etc/systemd/system/t8k-b2sync-hourly.service
+      rm -f /etc/systemd/system/t8k-b2sync-hourly.timer
+      rm -f /etc/systemd/system/t8k-b2sync-daily.service
+      rm -f /etc/systemd/system/t8k-b2sync-daily.timer
+      rm -f /etc/systemd/system/t8k-b2sync-weekly.service
+      rm -f /etc/systemd/system/t8k-b2sync-weekly.timer
+      rm -f /etc/systemd/system/t8k-b2sync-monthly.service
+      rm -f /etc/systemd/system/t8k-b2sync-monthly.timer
+  else
+      systemctl stop t8k-b2sync-daily.timer
+      systemctl disable t8k-b2sync-daily.timer
+      rm -f /etc/systemd/system/t8k-b2sync-daily.service
+      rm -f /etc/systemd/system/t8k-b2sync-daily.timer
   fi
 fi
 

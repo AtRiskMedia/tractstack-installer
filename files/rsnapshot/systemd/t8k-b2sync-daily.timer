@@ -1,0 +1,11 @@
+[Unit]
+Description=t8k daily B2 backup sync timer
+
+[Timer]
+OnCalendar=daily
+# Run at 00:15 daily, after the daily backup
+OnCalendar=*-*-* 00:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
