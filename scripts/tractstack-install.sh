@@ -136,10 +136,6 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   mkdir -p /home/"$NAME"/srv/public_html/storykeep
   cd /home/"$NAME"/srv/public_html/storykeep
   ln -s ../../tractstack-concierge/api api
-  # Create backup directories
-  mkdir -p /home/t8k/backup/"$NAME"
-  chown -R t8k:t8k /home/t8k/backup/"$NAME"
-  chmod 700 /home/t8k/backup/"$NAME"
 
   # Configure rsnapshot if not already done
   if [ ! -f /etc/rsnapshot.conf ]; then
