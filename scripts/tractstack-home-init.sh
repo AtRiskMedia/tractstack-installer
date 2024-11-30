@@ -41,6 +41,10 @@ elif [[ "$TARGET" == "features" || "$TARGET" == "sandbox" ]]; then
 
   mkdir tmp
   mkdir backup
+  # Create initial empty MySQL backup file
+  touch backup/mysql-backup.sql
+  chown "$USER":www-data backup/mysql-backup.sql
+  chmod 640 backup/mysql-backup.sql
   mkdir log
   mkdir watch
   mkdir src
