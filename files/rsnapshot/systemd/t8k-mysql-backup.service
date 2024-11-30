@@ -1,0 +1,5 @@
+[Unit]
+Description=t8k mysql backup service
+[Service]
+Type=oneshot
+ExecStart=/home/t8k/tractstack-installer/scripts/t8k-mysql-backup.sh

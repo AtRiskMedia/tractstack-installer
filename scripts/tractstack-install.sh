@@ -102,7 +102,7 @@ else
 fi
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
-  echo "$NAME" >> /home/t8k/.env.backups
+  echo "$NAME" >>/home/t8k/.env.backups
   echo ""
   echo Installing Tract Stack as user: "$NAME"
   useradd -m "$NAME"
@@ -143,35 +143,53 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
 
   # Configure rsnapshot if not already done
   if [ ! -f /etc/rsnapshot.conf ]; then
-      if [ "$ENHANCED_BACKUPS" = true ]; then
-          cp /home/t8k/tractstack-installer/files/rsnapshot/enhanced.conf /etc/rsnapshot.conf
-      else
-          cp /home/t8k/tractstack-installer/files/rsnapshot/growth.conf /etc/rsnapshot.conf
-      fi
+    if [ "$ENHANCED_BACKUPS" = true ]; then
+      cp /home/t8k/tractstack-installer/files/rsnapshot/enhanced.conf /etc/rsnapshot.conf
+    else
+      cp /home/t8k/tractstack-installer/files/rsnapshot/growth.conf /etc/rsnapshot.conf
+    fi
+  fi
+
+  # Configure MySQL backups if not already done
+  if [ ! -f /etc/systemd/system/t8k-mysql-backup.timer ] && [ ! -f /etc/systemd/system/t8k-mysql-backup-weekly.timer ]; then
+    chmod +x /home/t8k/tractstack-installer/scripts/t8k-mysql-backup.sh
+
+    if [ "$ENHANCED_BACKUPS" = true ]; then
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-mysql-backup.service /etc/systemd/system/
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-mysql-backup.timer /etc/systemd/system/
+      systemctl enable t8k-mysql-backup.timer
+      systemctl start t8k-mysql-backup.timer
+    else
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-mysql-backup-weekly.service /etc/systemd/system/
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-mysql-backup-weekly.timer /etc/systemd/system/
+      systemctl enable t8k-mysql-backup-weekly.timer
+      systemctl start t8k-mysql-backup-weekly.timer
+    fi
   fi
 
   # Add backup paths for this instance
-  echo -e "backup\t/home/$NAME/.env\t$NAME/" >> /etc/rsnapshot.conf
-  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/styles/frontend.css\t$NAME/" >> /etc/rsnapshot.conf
-  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/images/\t$NAME/" >> /etc/rsnapshot.conf
-  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/.env\t$NAME/" >> /etc/rsnapshot.conf
-  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/src/custom/\t$NAME/" >> /etc/rsnapshot.conf
-  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/public/custom/\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/.env\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/styles/frontend.css\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/images/\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/.env\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/src/custom/\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/public/custom/\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/backup/mysql-backup.sql\t$NAME/" >>/etc/rsnapshot.conf
 
   # Set up systemd timer if not exists
   if [ ! -f /etc/systemd/system/t8k-backup.timer ]; then
-      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.service /etc/systemd/system/
-      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.timer /etc/systemd/system/
-  
-      if [ "$ENHANCED_BACKUPS" = true ]; then
-          cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.service /etc/systemd/system/
-          cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.timer /etc/systemd/system/
-          systemctl enable t8k-backup-hourly.timer
-          systemctl start t8k-backup-hourly.timer
-      fi
-  
-      systemctl enable t8k-backup.timer
-      systemctl start t8k-backup.timer
+    cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.service /etc/systemd/system/
+    cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.timer /etc/systemd/system/
+
+    if [ "$ENHANCED_BACKUPS" = true ]; then
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.service /etc/systemd/system/
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.timer /etc/systemd/system/
+      systemctl enable t8k-backup-hourly.timer
+      systemctl start t8k-backup-hourly.timer
+    fi
+
+    systemctl enable t8k-backup.timer
+    systemctl start t8k-backup.timer
   fi
 
   cd - >/dev/null 2>&1

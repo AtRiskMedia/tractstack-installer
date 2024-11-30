@@ -1,0 +1,9 @@
+[Unit]
+Description=t8k mysql weekly backup timer
+[Timer]
+OnCalendar=weekly
+# Run Sunday at 23:45
+OnCalendar=Sun *-*-* 23:45:00
+Persistent=true
+[Install]
+WantedBy=timers.target
