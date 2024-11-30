@@ -1,0 +1,5 @@
+[Unit]
+Description=t8k hourly backup service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rsnapshot hourly

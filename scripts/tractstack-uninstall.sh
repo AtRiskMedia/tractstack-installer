@@ -109,6 +109,33 @@ fi
 #rm -rf /etc/letsencrypt/*/"$NAME".tractstack.com*
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
+    echo ""
+    echo "Removing backup configuration"
+    
+    # Remove from backups list
+    sed -i "/^$NAME$/d" /home/t8k/.env.backups
+    
+    # Remove backup directory
+    rm -rf /home/t8k/backup/"$NAME"
+    
+    # Remove from rsnapshot config
+    sed -i "/backup.*\/$NAME\//d" /etc/rsnapshot.conf
+    
+    # Check if this was the last backup user
+    if [ ! -s /home/t8k/.env.backups ]; then
+        # Stop and remove systemd timers
+        systemctl stop t8k-backup.timer
+        systemctl disable t8k-backup.timer
+        systemctl stop t8k-backup-hourly.timer 2>/dev/null || true
+        systemctl disable t8k-backup-hourly.timer 2>/dev/null || true
+        rm -f /etc/systemd/system/t8k-backup*
+        
+        # Remove rsnapshot config
+        rm -f /etc/rsnapshot.conf
+    fi
+fi
+
+if [ "$NAME" == "$INSTALL_USER" ]; then
   echo ""
   echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
   rm /etc/nginx/sites-available/storykeep."$NAME".conf

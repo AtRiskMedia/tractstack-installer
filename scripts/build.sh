@@ -109,12 +109,6 @@ if [ "$TARGET" = "front" ] || [ "$TARGET" = "all" ] || [ "$1" = "front" ] || [ "
     cd /home/"$USR"/src/tractstack-storykeep
   fi
 
-  cd src
-  SITE_URL_RAW=$(cat ../.env | grep PUBLIC_SITE_URL)
-  SITE_URL=$(echo "$SITE_URL_RAW" | sed 's/PUBLIC_SITE_URL\=//g')
-  sed -i "s@\(^\s*\)website:\s.*@\1website: \"$SITE_URL\",@" config.ts
-  cd ..
-
   RUNNING=$(docker ps -q --filter ancestor=tractstack-storykeep-"$ID")
   sudo docker build --network=host -t tractstack-storykeep-"$ID" .
   if [ ! -z "$RUNNING" ]; then

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ENHANCED_BACKUPS=true
+
 if [ -f /home/t8k/.env ]; then
   array=(4321 4322 4323 4324 4325 4326 4327 4328 4329 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4341 4342 4343 4344 4345 4346 4347 4348 4349 4350 4351)
   for i in "${array[@]}"; do
@@ -100,6 +102,7 @@ else
 fi
 
 if [ "$NAME" == "$INSTALL_USER" ]; then
+  echo "$NAME" >> /home/t8k/.env.backups
   echo ""
   echo Installing Tract Stack as user: "$NAME"
   useradd -m "$NAME"
@@ -133,6 +136,44 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   mkdir -p /home/"$NAME"/srv/public_html/storykeep
   cd /home/"$NAME"/srv/public_html/storykeep
   ln -s ../../tractstack-concierge/api api
+  # Create backup directories
+  mkdir -p /home/t8k/backup/"$NAME"
+  chown -R t8k:t8k /home/t8k/backup/"$NAME"
+  chmod 700 /home/t8k/backup/"$NAME"
+
+  # Configure rsnapshot if not already done
+  if [ ! -f /etc/rsnapshot.conf ]; then
+      if [ "$ENHANCED_BACKUPS" = true ]; then
+          cp /home/t8k/tractstack-installer/files/rsnapshot/enhanced.conf /etc/rsnapshot.conf
+      else
+          cp /home/t8k/tractstack-installer/files/rsnapshot/growth.conf /etc/rsnapshot.conf
+      fi
+  fi
+
+  # Add backup paths for this instance
+  echo -e "backup\t/home/$NAME/.env\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/styles/frontend.css\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/srv/tractstack-concierge/api/images/\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/.env\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/src/custom/\t$NAME/" >> /etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/public/custom/\t$NAME/" >> /etc/rsnapshot.conf
+
+  # Set up systemd timer if not exists
+  if [ ! -f /etc/systemd/system/t8k-backup.timer ]; then
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.service /etc/systemd/system/
+      cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup.timer /etc/systemd/system/
+  
+      if [ "$ENHANCED_BACKUPS" = true ]; then
+          cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.service /etc/systemd/system/
+          cp /home/t8k/tractstack-installer/files/rsnapshot/systemd/t8k-backup-hourly.timer /etc/systemd/system/
+          systemctl enable t8k-backup-hourly.timer
+          systemctl start t8k-backup-hourly.timer
+      fi
+  
+      systemctl enable t8k-backup.timer
+      systemctl start t8k-backup.timer
+  fi
+
   cd - >/dev/null 2>&1
 else
   echo ""
@@ -271,6 +312,7 @@ if [ "$NAME" == "$INSTALL_USER" ]; then
   chmod 660 /home/"$NAME"/src/tractstack-storykeep/.env
   chmod 770 /home/"$NAME"/src/tractstack-storykeep/public/styles
   chmod 660 /home/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
+  mkdir /home/"$NAME"/src/tractstack-storykeep/public/custom
   chmod 770 /home/"$NAME"/src/tractstack-storykeep/public/custom
   chmod 770 /home/"$NAME"/watch
 
@@ -309,6 +351,7 @@ else
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/.env
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles
   chmod 660 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/styles/custom.css
+  mkdir /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/src/tractstack-storykeep/public/custom
   chmod 770 /home/t8k/"$TARGET"/"$NAME"/watch
 
