@@ -49,20 +49,47 @@ echo -e "building ${white}$SITENAME (frontend)${reset}"
 
 cd /home/"$USR"/src/tractstack-storykeep
 
+# Store the old container ID if it exists
 RUNNING=$(docker ps -q --filter ancestor=tractstack-storykeep-"$USR")
+
+# Build the new image first
+echo "Building new image..."
 sudo docker build --network=host -t tractstack-storykeep-"$USR" .
-if [ ! -z "$RUNNING" ]; then
-  sudo docker stop "$RUNNING"
-  sudo docker rm "$RUNNING"
-  sudo docker ps
+
+if [ $? -eq 0 ]; then
+  # If build successful, stop and remove old container
+  if [ ! -z "$RUNNING" ]; then
+    echo "Stopping old container..."
+    sudo docker stop "$RUNNING"
+    sudo docker rm "$RUNNING"
+  fi
+
+  # Start new container
+  echo "Starting new container..."
+  NEW_CONTAINER=$(sudo docker run \
+    --net=host \
+    -d \
+    --restart unless-stopped \
+    -v /home/$USR/src/tractstack-storykeep/public:/app/public \
+    -v /home/$USR/src/tractstack-storykeep/config:/app/config \
+    tractstack-storykeep-"$USR")
+
+  if [ ! -z "$(docker ps -q -f id=$NEW_CONTAINER)" ]; then
+    # Clean up any dangling images
+    RUNNING_IMAGE=$(docker images -q tractstack-storykeep-"$USR" --filter "dangling=true" --no-trunc)
+    if [ ! -z "$RUNNING_IMAGE" ]; then
+      sudo docker rmi "$RUNNING_IMAGE"
+    fi
+    echo "Successfully deployed new container"
+  else
+    echo "New container failed to start. Please check logs."
+    exit 1
+  fi
 else
-  echo * new container
+  echo "Build failed. Keeping old container running."
+  exit 1
 fi
-sudo docker run --net=host -d --restart unless-stopped tractstack-storykeep-"$USR"
-RUNNING_IMAGE=$(docker images -q tractstack-storykeep-"$USR" --filter "dangling=true" --no-trunc)
-if [ ! -z "$RUNNING_IMAGE" ]; then
-  sudo docker rmi "$RUNNING_IMAGE"
-fi
+
 echo -e "${blue}done.${reset}"
 
 rm /home/"$USR"/watch/build.lock 2>/dev/null || true
