@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Handle directory change based on argument
 if [ ! -z $1 ]; then
   echo cd /home/"$1"
   cd /home/"$1"
@@ -7,6 +8,7 @@ else
   cd ..
 fi
 
+# Check for and load environment variables
 if [ -f ./.env ]; then
   NAME_RAW=$(cat ./.env | grep NAME)
   NAME=$(echo "$NAME_RAW" | sed 's/NAME\=//g')
@@ -16,12 +18,11 @@ if [ -f ./.env ]; then
   PORT=$(echo "$PORT_RAW" | sed 's/PORT\=//g')
 else
   echo "FATAL ERROR: Tract Stack ~/.env with NAME and USER not found."
-  exit
+  exit 1
 fi
 
 SITENAME="tractstack"
 NOW=$(date +%s)
-RAN=false
 
 # Get current lastBuild from existing build.json if it exists
 if [ -f /home/"$USR"/srv/tractstack-concierge/api/build.json ]; then
@@ -29,13 +30,17 @@ if [ -f /home/"$USR"/srv/tractstack-concierge/api/build.json ]; then
 else
   LAST_BUILD=$NOW
 fi
-echo "{\"status\":\"building\",\"lastBuild\":$LAST_BUILD,\"now\":$NOW}" >/home/"$USR"/srv/tractstack-concierge/api/build.json
 
+# Update build status to building
+echo "{\"status\":\"building\",\"lastBuild\":$LAST_BUILD,\"now\":$NOW}" > /home/"$USR"/srv/tractstack-concierge/api/build.json
+
+# Define colors for output
 blue='\033[0;34m'
 brightblue='\033[1;34m'
 white='\033[1;37m'
 reset='\033[0m'
 
+# Display ASCII art header
 echo -e "${brightblue}"
 echo -e "${brightblue}  _                ${blue}  _       _             _     "
 echo -e "${brightblue} | |_ _ __ __ _  ___| |_ ${blue}___| |_ __ _  ___| | __ "
@@ -47,52 +52,66 @@ echo -e "${white}  free web press ${reset}by At Risk Media"
 echo ""
 echo -e "building ${white}$SITENAME (frontend)${reset}"
 
+# Change to project directory
 cd /home/"$USR"/src/tractstack-storykeep
 
-# Store the old container ID if it exists
-RUNNING=$(docker ps -q --filter ancestor=tractstack-storykeep-"$USR")
-
-# Build the new image first
+# Build the new image
 echo "Building new image..."
-sudo docker build --network=host -t tractstack-storykeep-"$USR" .
+if ! sudo docker build --network=host -t tractstack-storykeep-"$USR" .; then
+    echo "Build failed."
+    echo "{\"status\":\"failed\",\"lastBuild\":$NOW}" > /home/"$USR"/srv/tractstack-concierge/api/build.json
+    exit 1
+fi
 
-if [ $? -eq 0 ]; then
-  # If build successful, stop and remove old container
-  if [ ! -z "$RUNNING" ]; then
-    echo "Stopping old container..."
-    sudo docker stop "$RUNNING"
-    sudo docker rm "$RUNNING"
-  fi
+# After successful build, stop the old container
+echo "Stopping old container..."
+RUNNING_CONTAINER=$(sudo docker ps --filter ancestor=tractstack-storykeep-"$USR" -q | head -n 1)
+if [ ! -z "$RUNNING_CONTAINER" ]; then
+    sudo docker stop "$RUNNING_CONTAINER" >/dev/null 2>&1
+    sudo docker rm "$RUNNING_CONTAINER" >/dev/null 2>&1
+fi
 
-  # Start new container
-  echo "Starting new container..."
-  NEW_CONTAINER=$(sudo docker run \
+# Start new container and capture its ID
+echo "Starting new container..."
+NEW_CONTAINER=$(sudo docker run \
     --net=host \
     -d \
+    --name tractstack-storykeep-"$USR"-$(date +%s) \
     --restart unless-stopped \
     -v /home/$USR/src/tractstack-storykeep/public:/app/public \
     -v /home/$USR/src/tractstack-storykeep/config:/app/config \
     tractstack-storykeep-"$USR")
 
-  if [ ! -z "$(docker ps -q -f id=$NEW_CONTAINER)" ]; then
+# Verify new container is running
+if [ ! -z "$(sudo docker ps -q -f id=$NEW_CONTAINER)" ]; then
+    # Clean up any other stopped containers for this image
+    echo "Cleaning up any stopped containers..."
+    STOPPED_CONTAINERS=$(sudo docker ps -a --filter ancestor=tractstack-storykeep-"$USR" -q | grep -v "$NEW_CONTAINER")
+    if [ ! -z "$STOPPED_CONTAINERS" ]; then
+        echo "$STOPPED_CONTAINERS" | while read container; do
+            [ "$container" != "$NEW_CONTAINER" ] && sudo docker rm "$container" >/dev/null 2>&1
+        done
+    fi
+    
     # Clean up any dangling images
-    RUNNING_IMAGE=$(docker images -q tractstack-storykeep-"$USR" --filter "dangling=true" --no-trunc)
-    if [ ! -z "$RUNNING_IMAGE" ]; then
-      sudo docker rmi "$RUNNING_IMAGE"
+    DANGLING_IMAGES=$(sudo docker images -q tractstack-storykeep-"$USR" --filter "dangling=true" --no-trunc)
+    if [ ! -z "$DANGLING_IMAGES" ]; then
+        echo "Cleaning up old images..."
+        echo "$DANGLING_IMAGES" | while read image; do
+            sudo docker rmi "$image" >/dev/null 2>&1
+        done
     fi
     echo "Successfully deployed new container"
-  else
-    echo "New container failed to start. Please check logs."
-    exit 1
-  fi
 else
-  echo "Build failed. Keeping old container running."
-  exit 1
+    echo "New container failed to start. Please check logs with: docker logs $NEW_CONTAINER"
+    echo "{\"status\":\"failed\",\"lastBuild\":$NOW}" > /home/"$USR"/srv/tractstack-concierge/api/build.json
+    exit 1
 fi
 
 echo -e "${blue}done.${reset}"
 
+# Remove build lock file if it exists
 rm /home/"$USR"/watch/build.lock 2>/dev/null || true
 
 # Update build status on success
-echo "{\"status\":\"active\",\"lastBuild\":$NOW}" >/home/"$USR"/srv/tractstack-concierge/api/build.json
+echo "{\"status\":\"active\",\"lastBuild\":$NOW}" > /home/"$USR"/srv/tractstack-concierge/api/build.json
