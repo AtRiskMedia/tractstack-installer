@@ -82,9 +82,8 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}free web press"
-echo -e "${white}by At Risk Media"
-echo -e "${reset}"
+echo -e "${white}  free web press ${reset}by At Risk Media"
+echo ""
 
 if [ -z "$NAME" ]; then
   echo To install Tract Stack provide linux user name
@@ -261,7 +260,7 @@ echo PRIVATE_EDITOR_PASSWORD="$STORYKEEP_SECRET" >>/home/"$NAME"/src/tractstack-
 echo ""
 echo Running build
 cd /home/"$NAME"/scripts
-./build.sh all
+./build.sh
 
 echo ""
 echo Congrats Tract Stack has been installed to:

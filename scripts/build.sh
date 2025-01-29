@@ -1,15 +1,9 @@
 #!/bin/bash
 
-echo Usage:
-echo sudo ./build.sh 1
-echo optional: 1 = username
-echo ""
-
 if [ ! -z $1 ]; then
   echo cd /home/"$1"
   cd /home/"$1"
 else
-  echo cd ..
   cd ..
 fi
 
@@ -49,9 +43,7 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_\__ ${blue}\ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}free web press"
-echo -e "${white}by At Risk Media"
-echo -e "${reset}"
+echo -e "${white}  free web press ${reset}by At Risk Media"
 echo ""
 echo -e "building ${white}$SITENAME (frontend)${reset}"
 

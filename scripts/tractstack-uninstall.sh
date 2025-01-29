@@ -18,9 +18,8 @@ echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / 
 echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
 echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
-echo -e "${reset}free web press"
-echo -e "${white}by At Risk Media"
-echo -e "${reset}"
+echo -e "${white}  free web press ${reset}by At Risk Media"
+echo ""
 
 if [ "$NAME" == "t8k" ]; then
   echo "Cannot uninstall primary t8k user; did you mean to?"
@@ -100,28 +99,27 @@ fi
 echo ""
 echo "Removing B2 sync systemd units"
 if [ "$ENHANCED_BACKUPS" = true ]; then
-    systemctl stop t8k-b2sync-hourly.timer
-    systemctl disable t8k-b2sync-hourly.timer
-    systemctl stop t8k-b2sync-daily.timer
-    systemctl disable t8k-b2sync-daily.timer
-    systemctl stop t8k-b2sync-weekly.timer
-    systemctl disable t8k-b2sync-weekly.timer
-    systemctl stop t8k-b2sync-monthly.timer
-    systemctl disable t8k-b2sync-monthly.timer
-    rm -f /etc/systemd/system/t8k-b2sync-hourly.service
-    rm -f /etc/systemd/system/t8k-b2sync-hourly.timer
-    rm -f /etc/systemd/system/t8k-b2sync-daily.service
-    rm -f /etc/systemd/system/t8k-b2sync-daily.timer
-    rm -f /etc/systemd/system/t8k-b2sync-weekly.service
-    rm -f /etc/systemd/system/t8k-b2sync-weekly.timer
-    rm -f /etc/systemd/system/t8k-b2sync-monthly.service
-    rm -f /etc/systemd/system/t8k-b2sync-monthly.timer
+  systemctl stop t8k-b2sync-hourly.timer
+  systemctl disable t8k-b2sync-hourly.timer
+  systemctl stop t8k-b2sync-daily.timer
+  systemctl disable t8k-b2sync-daily.timer
+  systemctl stop t8k-b2sync-weekly.timer
+  systemctl disable t8k-b2sync-weekly.timer
+  systemctl stop t8k-b2sync-monthly.timer
+  systemctl disable t8k-b2sync-monthly.timer
+  rm -f /etc/systemd/system/t8k-b2sync-hourly.service
+  rm -f /etc/systemd/system/t8k-b2sync-hourly.timer
+  rm -f /etc/systemd/system/t8k-b2sync-daily.service
+  rm -f /etc/systemd/system/t8k-b2sync-daily.timer
+  rm -f /etc/systemd/system/t8k-b2sync-weekly.service
+  rm -f /etc/systemd/system/t8k-b2sync-weekly.timer
+  rm -f /etc/systemd/system/t8k-b2sync-monthly.service
+  rm -f /etc/systemd/system/t8k-b2sync-monthly.timer
 else
-    systemctl stop t8k-b2sync-daily.timer
-    systemctl disable t8k-b2sync-daily.timer
-    rm -f /etc/systemd/system/t8k-b2sync-daily.service
-    rm -f /etc/systemd/system/t8k-b2sync-daily.timer
-fi
+  systemctl stop t8k-b2sync-daily.timer
+  systemctl disable t8k-b2sync-daily.timer
+  rm -f /etc/systemd/system/t8k-b2sync-daily.service
+  rm -f /etc/systemd/system/t8k-b2sync-daily.timer
 fi
 
 echo ""
