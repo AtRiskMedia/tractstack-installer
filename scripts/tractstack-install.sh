@@ -71,7 +71,7 @@ SED_PORT='s/ZZZZY/'"$PORT"'/g'
 NAME=$1
 INSTALL_USER=$1
 SED='s/ZZZZZ/'"$NAME"'/g'
-SED_URL='s/ZZZZQ/'"$NAME"."$BASE_URL'/g'
+SED_URL='s/ZZZZQ/'"$NAME"."$BASE_URL"'/g'
 
 blue='\033[0;34m'
 brightblue='\033[1;34m'
