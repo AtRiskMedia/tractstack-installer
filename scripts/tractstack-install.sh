@@ -3,6 +3,9 @@
 BASE_URL='tractstack.com'
 ENHANCED_BACKUPS=true
 
+NAME=$1
+INSTALL_USER=$1
+
 blue='\033[0;34m'
 brightblue='\033[1;34m'
 white='\033[1;37m'
@@ -101,8 +104,6 @@ if [ -z "$PORT" ]; then
 fi
 
 SED_PORT='s/ZZZZY/'"$PORT"'/g'
-NAME=$1
-INSTALL_USER=$1
 SED='s/ZZZZZ/'"$NAME"'/g'
 SED_URL='s/ZZZZQ/'"$NAME"."$BASE_URL"'/g'
 
