@@ -243,8 +243,8 @@ cp ../files/conf/concierge.env.incl /home/"$NAME"/srv/tractstack-concierge/.env
 cp ../files/conf/storykeep.env.incl /home/"$NAME"/src/tractstack-storykeep/.env
 cp ../files/tractstack-storykeep/Dockerfile /home/"$NAME"/src/tractstack-storykeep
 sed -i -e "$SED" /home/"$NAME"/srv/tractstack-concierge/.env
-sed -i -e "$SED_URL" /home/"$NAME"/srv/tractstack-concierge/.env
 sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/.env
+sed -i -e "$SED_URL" /home/"$NAME"/src/tractstack-storykeep/.env
 sed -i -e "$SED_URL" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
 sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
 chown "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/.env
