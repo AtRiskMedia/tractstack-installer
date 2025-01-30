@@ -20,7 +20,7 @@ RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
     openssl rsa -passin pass:x -in server.pass.key -out server.key && \
     rm server.pass.key && \
     openssl req -new -key server.key -out server.csr \
-        -subj "/C=UK/ST=Ontario/L=Toronto/O=AtRiskMedia/OU=TractStack/CN=ZZZZZ.tractstack.com" && \
+        -subj "/C=UK/ST=Ontario/L=Toronto/O=AtRiskMedia/OU=TractStack/CN=ZZZZQ" && \
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 # Build the application
 RUN pnpm build

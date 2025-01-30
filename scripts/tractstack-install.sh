@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BASE_URL='tractstack.com'
 ENHANCED_BACKUPS=true
 
 # B2 Backup Configuration
@@ -70,6 +71,7 @@ SED_PORT='s/ZZZZY/'"$PORT"'/g'
 NAME=$1
 INSTALL_USER=$1
 SED='s/ZZZZZ/'"$NAME"'/g'
+SED_URL='s/ZZZZQ/'"$NAME"."$BASE_URL'/g'
 
 blue='\033[0;34m'
 brightblue='\033[1;34m'
@@ -196,7 +198,9 @@ echo Creating nginx config for "$NAME".tractstack.com and storykeep."$NAME".trac
 cp ../files/nginx/storykeep.conf /etc/nginx/sites-available/storykeep."$NAME".conf
 cp ../files/nginx/tractstack.conf /etc/nginx/sites-available/t8k."$NAME".conf
 sed -i -e "$SED" /etc/nginx/sites-available/storykeep."$NAME".conf
+sed -i -e "$SED_URL" /etc/nginx/sites-available/storykeep."$NAME".conf
 sed -i -e "$SED" /etc/nginx/sites-available/t8k."$NAME".conf
+sed -i -e "$SED_URL" /etc/nginx/sites-available/t8k."$NAME".conf
 sed -i -e "$SED_PORT" /etc/nginx/sites-available/t8k."$NAME".conf
 cd /etc/nginx/sites-enabled
 ln -s ../sites-available/storykeep."$NAME".conf
@@ -239,8 +243,9 @@ cp ../files/conf/concierge.env.incl /home/"$NAME"/srv/tractstack-concierge/.env
 cp ../files/conf/storykeep.env.incl /home/"$NAME"/src/tractstack-storykeep/.env
 cp ../files/tractstack-storykeep/Dockerfile /home/"$NAME"/src/tractstack-storykeep
 sed -i -e "$SED" /home/"$NAME"/srv/tractstack-concierge/.env
+sed -i -e "$SED_URL" /home/"$NAME"/srv/tractstack-concierge/.env
 sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/.env
-sed -i -e "$SED" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
+sed -i -e "$SED_URL" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
 sed -i -e "$SED_PORT" /home/"$NAME"/src/tractstack-storykeep/Dockerfile
 chown "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/.env
 chown "$NAME":www-data /home/"$NAME"/src/tractstack-storykeep/Dockerfile
