@@ -3,6 +3,39 @@
 BASE_URL='tractstack.com'
 ENHANCED_BACKUPS=true
 
+blue='\033[0;34m'
+brightblue='\033[1;34m'
+white='\033[1;37m'
+reset='\033[0m'
+echo -e "${brightblue}"
+echo -e "${brightblue}  _                ${blue}  _       _             _     "
+echo -e "${brightblue} | |_ _ __ __ _  ___| |_ ${blue}___| |_ __ _  ___| | __ "
+echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / "
+echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
+echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
+echo -e ""
+echo -e "${white}  free web press ${reset}by At Risk Media"
+echo ""
+
+if [ -z "$NAME" ]; then
+  echo To install Tract Stack provide linux user name
+  echo Usage: sudo ./tractstack-install.sh username
+  echo ""
+  exit 1
+fi
+
+if [ -d /home/"$NAME" ]; then
+  echo User "$NAME" already exists.
+  echo ""
+  exit 1
+fi
+
+if [ "$USER" != root ]; then
+  echo Must provide sudo privileges
+  echo ""
+  exit 1
+fi
+
 # B2 Backup Configuration
 if [ ! -f /home/t8k/.env.b2 ]; then
   echo "Creating /home/t8k/.env.b2"
@@ -49,7 +82,7 @@ fi
 echo "B2 configuration successful!"
 
 if [ -f /home/t8k/.env ]; then
-  array=(4321 4322 4323 4324 4325 4326 4327 4328 4329 4330 4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4341 4342 4343 4344 4345 4346 4347 4348 4349 4350 4351)
+  array=(4331 4332 4333 4334 4335 4336 4337 4338 4339 4340 4341 4342 4343 4344 4345 4346 4347 4348 4349 4350 4351 4352 4353 4354 4355 4356 4357 4358 4359 4360)
   for i in "${array[@]}"; do
     USED=$(cat /home/t8k/.env | grep "$i" | wc -l)
     if [ -z "$PORT" ]; then
@@ -60,7 +93,7 @@ if [ -f /home/t8k/.env ]; then
     fi
   done
 else
-  PORT=4321
+  PORT=4331
 fi
 if [ -z "$PORT" ]; then
   echo FATAL ERROR: All ports are allocated.
@@ -72,39 +105,6 @@ NAME=$1
 INSTALL_USER=$1
 SED='s/ZZZZZ/'"$NAME"'/g'
 SED_URL='s/ZZZZQ/'"$NAME"."$BASE_URL"'/g'
-
-blue='\033[0;34m'
-brightblue='\033[1;34m'
-white='\033[1;37m'
-reset='\033[0m'
-echo -e "${brightblue}"
-echo -e "${brightblue}  _                ${blue}  _       _             _     "
-echo -e "${brightblue} | |_ _ __ __ _  ___| |_ ${blue}___| |_ __ _  ___| | __ "
-echo -e "${brightblue} | __| \__/ _\` |/ __| __/ ${blue}__| __/ _\` |/ __| |/ / "
-echo -e "${brightblue} | |_| | | (_| | (__| |_${blue}\__ \ || (_| | (__|   <  "
-echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
-echo -e ""
-echo -e "${white}  free web press ${reset}by At Risk Media"
-echo ""
-
-if [ -z "$NAME" ]; then
-  echo To install Tract Stack provide linux user name
-  echo Usage: sudo ./tractstack-install.sh username
-  echo ""
-  exit 1
-fi
-
-if [ -d /home/"$NAME" ]; then
-  echo User "$NAME" already exists.
-  echo ""
-  exit 1
-fi
-
-if [ "$USER" != root ]; then
-  echo Must provide sudo privileges
-  echo ""
-  exit 1
-fi
 
 CONCIERGE_SECRET=$(</dev/urandom tr -dc A-Za-z | head -c8)
 CONCIERGE_PUBLIC_SECRET=$(</dev/urandom tr -dc A-Za-z | head -c8)
