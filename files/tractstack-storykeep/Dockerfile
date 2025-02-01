@@ -35,13 +35,13 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/server.key ./server.key
 COPY --from=build /app/server.crt ./server.crt
 COPY --from=build /app/public ./public
+# Create .env file with default values that will be overwritten by mount
+RUN touch .env
 # Copy only the production dependencies
 COPY --from=build /app/node_modules ./node_modules
 # Set environment variables and expose port
 ENV HOST=0.0.0.0
 ENV PORT=ZZZZY
 EXPOSE ZZZZY
-# Declare volumes for both config and public directories
-VOLUME ["/app/config", "/app/public"]
 # Command to run the application
 CMD ["node", "./dist/server/entry.mjs"]

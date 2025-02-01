@@ -55,6 +55,10 @@ echo -e "building ${white}$SITENAME (frontend)${reset}"
 # Change to project directory
 cd /home/"$USR"/src/tractstack-storykeep
 
+# Ensure directories exist
+mkdir -p /home/"$USR"/src/tractstack-storykeep/public
+mkdir -p /home/"$USR"/src/tractstack-storykeep/config
+
 # Build the new image
 echo "Building new image..."
 if ! sudo docker build --network=host -t tractstack-storykeep-"$USR" .; then
@@ -63,24 +67,41 @@ if ! sudo docker build --network=host -t tractstack-storykeep-"$USR" .; then
   exit 1
 fi
 
-# After successful build, stop the old container
-echo "Stopping old container..."
-RUNNING_CONTAINER=$(sudo docker ps --filter ancestor=tractstack-storykeep-"$USR" -q | head -n 1)
-if [ ! -z "$RUNNING_CONTAINER" ]; then
-  sudo docker stop "$RUNNING_CONTAINER" >/dev/null 2>&1
-  sudo docker rm "$RUNNING_CONTAINER" >/dev/null 2>&1
+# Stop and remove all existing containers with our name pattern
+echo "Cleaning up existing containers..."
+for attempt in {1..3}; do
+  # Get all containers matching our name pattern (both running and stopped)
+  EXISTING_CONTAINERS=$(sudo docker ps -a --format '{{.Names}}' | grep "tractstack-storykeep-$USR" || true)
+  if [ ! -z "$EXISTING_CONTAINERS" ]; then
+    # Force stop and remove all matching containers
+    echo "$EXISTING_CONTAINERS" | while read container; do
+      echo "Stopping and removing $container"
+      sudo docker stop -t 0 "$container" 2>/dev/null || true
+      sudo docker rm -f "$container" 2>/dev/null || true
+    done
+  fi
+
+  # Double check nothing is left
+  REMAINING=$(sudo docker ps -a --format '{{.Names}}' | grep "tractstack-storykeep-$USR" || true)
+  if [ -z "$REMAINING" ]; then
+    echo "All containers cleaned up successfully"
+    break
+  fi
+
+  echo "Retrying cleanup... (attempt $attempt)"
+  sleep 1
+done
+
+# Final verification
+if [ ! -z "$(sudo docker ps -a --format '{{.Names}}' | grep "tractstack-storykeep-$USR" || true)" ]; then
+  echo "Failed to clean up all containers"
+  exit 1
 fi
 
-# Generate new container name
+# Generate new container name with timestamp
 CONTAINER_NAME="tractstack-storykeep-$USR-$(date +%s)"
 
-# Check if container with this name already exists and remove it
-if sudo docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-  echo "Container with name $CONTAINER_NAME already exists, removing it..."
-  sudo docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1
-fi
-
-# Start new container and capture its ID
+# Start new container with bind mounts
 echo "Starting new container..."
 if ! NEW_CONTAINER=$(sudo docker run \
   --net=host \
@@ -89,6 +110,7 @@ if ! NEW_CONTAINER=$(sudo docker run \
   --restart unless-stopped \
   -v /home/$USR/src/tractstack-storykeep/public:/app/public \
   -v /home/$USR/src/tractstack-storykeep/config:/app/config \
+  -v /home/$USR/src/tractstack-storykeep/.env:/app/.env \
   tractstack-storykeep-"$USR"); then
   echo "Failed to start new container"
   echo "{\"status\":\"failed\",\"lastBuild\":$NOW}" >/home/"$USR"/srv/tractstack-concierge/api/build.json
@@ -97,15 +119,6 @@ fi
 
 # Verify new container is running
 if [ ! -z "$(sudo docker ps -q -f id=$NEW_CONTAINER)" ]; then
-  # Clean up any other stopped containers for this image
-  echo "Cleaning up any stopped containers..."
-  STOPPED_CONTAINERS=$(sudo docker ps -a --filter ancestor=tractstack-storykeep-"$USR" -q | grep -v "$NEW_CONTAINER")
-  if [ ! -z "$STOPPED_CONTAINERS" ]; then
-    echo "$STOPPED_CONTAINERS" | while read container; do
-      [ "$container" != "$NEW_CONTAINER" ] && sudo docker rm "$container" >/dev/null 2>&1
-    done
-  fi
-
   # Clean up any dangling images
   DANGLING_IMAGES=$(sudo docker images -q tractstack-storykeep-"$USR" --filter "dangling=true" --no-trunc)
   if [ ! -z "$DANGLING_IMAGES" ]; then
