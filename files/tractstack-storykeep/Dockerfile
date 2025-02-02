@@ -32,6 +32,7 @@ WORKDIR /app
 RUN mkdir -p /app/config /app/public/styles
 # Copy the build artifacts from the build stage
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/tailwind.config.cjs ./tailwind.config.cjs
 COPY --from=build /app/server.key ./server.key
 COPY --from=build /app/server.crt ./server.crt
 COPY --from=build /app/public ./public
