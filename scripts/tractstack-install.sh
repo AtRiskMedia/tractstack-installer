@@ -129,6 +129,7 @@ chown "$NAME":www-data /home/"$NAME"
 mkdir /home/"$NAME"/scripts
 cp ./tractstack-home-init.sh /home/"$NAME"/scripts/
 cp ./build.sh /home/"$NAME"/scripts/
+cp ./pull.sh /home/"$NAME"/scripts/
 sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
 rm /home/"$NAME"/scripts/tractstack-home-init.sh
 touch /home/"$NAME"/srv/tractstack-concierge/api/build.json

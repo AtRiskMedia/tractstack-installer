@@ -35,7 +35,6 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/tailwind.config.cjs ./tailwind.config.cjs
 COPY --from=build /app/server.key ./server.key
 COPY --from=build /app/server.crt ./server.crt
-COPY --from=build /app/public ./public
 # Create .env file with default values that will be overwritten by mount
 RUN touch .env
 # Copy only the production dependencies
