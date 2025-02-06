@@ -24,7 +24,7 @@ pnpm create astro@latest tractstack-storykeep \
   --skip-houston
 cd ~/src/
 echo Installing Code Base for easy updates
-git clone -b nodes-compositor https://github.com/AtRiskMedia/tractstack-starter.git
+git clone -b rc https://github.com/AtRiskMedia/tractstack-starter.git
 cd ~/srv/
 echo Installing your Concierge
 git clone https://github.com/AtRiskMedia/tractstack-concierge.git
