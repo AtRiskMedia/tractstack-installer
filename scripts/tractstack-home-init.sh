@@ -16,7 +16,7 @@ echo Installing Tract Stack
 corepack enable
 yes | COREPACK_ENABLE_STRICT=0 corepack prepare pnpm@9.12.3 --activate
 pnpm create astro@latest tractstack-storykeep \
-  --template AtRiskMedia/tractstack-starter/template#nodes-compositor \
+  --template AtRiskMedia/tractstack-starter/template#rc \
   --typescript strict \
   --install \
   --package-manager pnpm \
