@@ -22,6 +22,7 @@ pnpm create astro@latest tractstack-storykeep \
   --package-manager pnpm \
   --no-git \
   --skip-houston
+touch tractstack-starter/public/styles/frontend.css
 cd ~/src/
 echo Installing Code Base for easy updates
 git clone -b rc https://github.com/AtRiskMedia/tractstack-starter.git
