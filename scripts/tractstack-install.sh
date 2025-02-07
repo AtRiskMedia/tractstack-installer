@@ -180,6 +180,7 @@ if [ "$USE_BACKUPS" = true ]; then
   echo -e "backup\t/home/$NAME/src/tractstack-storykeep/.env\t$NAME/" >>/etc/rsnapshot.conf
   echo -e "backup\t/home/$NAME/src/tractstack-storykeep/src/custom/\t$NAME/" >>/etc/rsnapshot.conf
   echo -e "backup\t/home/$NAME/src/tractstack-storykeep/public/custom/\t$NAME/" >>/etc/rsnapshot.conf
+  echo -e "backup\t/home/$NAME/src/tractstack-storykeep/public/images/\t$NAME/" >>/etc/rsnapshot.conf
 
   # Set up systemd timer if not exists
   if [ ! -f /etc/systemd/system/t8k-backup.timer ]; then
