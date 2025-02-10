@@ -1,29 +1,36 @@
 #!/bin/bash
 set -e  # Exit on error
-set -x  # Enable debug output
 
-# Get the directory containing the script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# ANSI color codes
+blue='\033[0;34m'
+red='\033[0;31m'
+reset='\033[0m'
 
-# Source the .env file to get USER variable
-if [ -f "$SCRIPT_DIR/../.env" ]; then
-    source "$SCRIPT_DIR/../.env"
+# Handle directory change based on argument (similar to build.sh)
+if [ ! -z "$1" ]; then
+    cd /home/"$1"
 else
-    echo "Error: $SCRIPT_DIR/../.env file not found"
+    cd ..
+fi
+
+# Check for and load environment variables (following build.sh pattern)
+if [ -f ./.env ]; then
+    USR_RAW=$(cat ./.env | grep USER)
+    USR=$(echo "$USR_RAW" | sed 's/USER\=//g')
+else
+    echo -e "${red}FATAL ERROR: Tract Stack ~/.env with USER not found.${reset}"
     exit 1
 fi
 
-# Check if USER variable is set
-if [ -z "$USER" ]; then
-    echo "Error: USER not defined in .env"
-    exit 1
-fi
+# Get current user
+CURRENT_USER=$(whoami)
 
 # Check if we're running as the specified user
-if [ "$(whoami)" != "$USER" ]; then
-    echo "Switching to user: $USER"
-    exec su - "$USER" -c "cd /home/$USER/src/tractstack-starter/scripts && ./storykeep-pull.sh"
+if [ "$CURRENT_USER" != "$USR" ]; then
+    echo -e "${blue}Switching to user: $USR${reset}"
+    exec su - "$USR" -c "cd /home/$USR/src/tractstack-starter/scripts && ./storykeep-pull.sh"
 fi
 
-# If we're already the correct user
-cd "/home/$USER/src/tractstack-starter/scripts" && ./storykeep-pull.sh
+# If we're already the correct user, execute directly
+echo -e "${blue}Running as $USR${reset}"
+cd "/home/$USR/src/tractstack-starter/scripts" && ./storykeep-pull.sh
