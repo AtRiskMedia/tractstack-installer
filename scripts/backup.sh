@@ -43,7 +43,7 @@ do_backup() {
 # Check if we're running as the specified user
 if [ "$CURRENT_USER" != "$USR" ]; then
   echo "Switching to user: $USR"
-  exec su - "$USR" -c "cd /home/$USR/src/tractstack-starter/scripts && ./backup.sh"
+  exec su - "$USR" -c "cd /home/$USR/scripts && ./backup.sh"
 else
   echo "Running as $USR"
   do_backup
