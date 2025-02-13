@@ -130,6 +130,8 @@ mkdir /home/"$NAME"/scripts
 cp ./tractstack-home-init.sh /home/"$NAME"/scripts/
 cp ./build.sh /home/"$NAME"/scripts/
 cp ./pull.sh /home/"$NAME"/scripts/
+cp ./extract_tailwind.py /home/"$NAME"/scripts/
+cp ./tailwindGen.sh /home/"$NAME"/scripts/
 cp ./backup.sh /home/"$NAME"/scripts/
 sudo -H -u "$NAME" bash -c '~/scripts/tractstack-home-init.sh'
 rm /home/"$NAME"/scripts/tractstack-home-init.sh

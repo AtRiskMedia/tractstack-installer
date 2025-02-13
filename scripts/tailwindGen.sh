@@ -28,9 +28,9 @@ CURRENT_USER=$(whoami)
 # Check if we're running as the specified user
 if [ "$CURRENT_USER" != "$USR" ]; then
     echo -e "${blue}Switching to user: $USR${reset}"
-    exec su - "$USR" -c "cd /home/$USR/src/tractstack-starter/scripts && python3 extract_tailwind.py"
+    exec su - "$USR" -c "cd /home/$USR/scripts && python3 extract_tailwind.py"
 fi
 
 # If we're already the correct user, execute directly
 echo -e "${blue}Running as $USR${reset}"
-cd "/home/$USR/src/tractstack-starter/scripts" && python3 extract_tailwind.py
+cd /home/$USR/scripts && python3 extract_tailwind.py
