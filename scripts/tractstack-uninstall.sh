@@ -1,10 +1,19 @@
 #!/bin/bash
 
 ENHANCED_BACKUPS=true
-
 NAME=$1
 INSTALL_USER=$1
 ID="$1"
+
+# Define paths as variables
+ENV_FILE="/home/t8k/.env"
+ENV_BACKUPS="/home/t8k/.env.backups"
+BACKUP_DIR="/home/t8k/backup"
+RSNAPSHOT_CONF="/etc/rsnapshot.conf"
+NGINX_SITES_AVAIL="/etc/nginx/sites-available"
+NGINX_SITES_ENAB="/etc/nginx/sites-enabled"
+LOGROTATE_DIR="/etc/logrotate.d"
+SYSTEMD_DIR="/etc/systemd/system"
 
 blue='\033[0;34m'
 brightblue='\033[1;34m'
@@ -39,7 +48,7 @@ if [ "$NAME" = "" ]; then
   exit 1
 fi
 
-if [ "$USER" != root ]; then
+if [ "$USER" != "root" ]; then
   echo Must provide sudo privileges
   echo ""
   exit 1
@@ -49,99 +58,76 @@ RUNNING=$(docker ps -q --filter ancestor=tractstack-storykeep-"$ID")
 if [ ! -z "$RUNNING" ]; then
   echo ""
   echo Stopping Docker
-  sudo docker stop "$RUNNING"
-  sudo docker rm "$RUNNING"
+  docker stop "$RUNNING"
+  docker rm "$RUNNING"
 fi
 
 echo ""
 echo Cancelling port reservation
-cp /home/t8k/.env /home/t8k/.env.bak
-grep -v "^PORT_""$NAME" /home/t8k/.env.bak >/home/t8k/.env
+[ -f "$ENV_FILE" ] && cp "$ENV_FILE" "$ENV_FILE.bak" && grep -v "^PORT_""$NAME" "$ENV_FILE.bak" >"$ENV_FILE"
 
 echo ""
 echo Removing Tract Stack for user: "$NAME"
 deluser "$NAME"
-rm -rf /home/"$NAME"
-
-#echo ""
-#echo Remove certificate
-#rm -rf /etc/letsencrypt/*/"$NAME".tractstack.com*
+[ -d /home/"$NAME" ] && rm -rf /home/"$NAME"
 
 echo ""
 echo "Removing backup configuration"
+[ -f "$ENV_BACKUPS" ] && sed -i "/^$NAME$/d" "$ENV_BACKUPS"
+[ -d "$BACKUP_DIR/$NAME" ] && rm -rf "$BACKUP_DIR/$NAME"
+[ -f "$RSNAPSHOT_CONF" ] && sed -i "/backup.*\/$NAME\//d" "$RSNAPSHOT_CONF"
 
-# Remove from backups list
-sed -i "/^$NAME$/d" /home/t8k/.env.backups
-
-# Remove backup directory
-rm -rf /home/t8k/backup/"$NAME"
-
-# Remove from rsnapshot config
-sed -i "/backup.*\/$NAME\//d" /etc/rsnapshot.conf
-
-# Check if this was the last backup user
-if [ ! -s /home/t8k/.env.backups ]; then
-  # Stop and remove systemd timers
-  systemctl stop t8k-backup.timer
-  systemctl disable t8k-backup.timer
-  systemctl stop t8k-backup-hourly.timer 2>/dev/null || true
-  systemctl disable t8k-backup-hourly.timer 2>/dev/null || true
-  rm -f /etc/systemd/system/t8k-backup*
-  systemctl stop t8k-mysql-backup.timer 2>/dev/null || true
-  systemctl disable t8k-mysql-backup.timer 2>/dev/null || true
-  systemctl stop t8k-mysql-backup-weekly.timer 2>/dev/null || true
-  systemctl disable t8k-mysql-backup-weekly.timer 2>/dev/null || true
-  rm -f /etc/systemd/system/t8k-mysql-backup*
-  # Remove rsnapshot config
-  rm -f /etc/rsnapshot.conf
+if [ -f "$ENV_BACKUPS" ] && [ ! -s "$ENV_BACKUPS" ]; then
+  systemctl is-active t8k-backup.timer >/dev/null 2>&1 && systemctl stop t8k-backup.timer
+  systemctl is-enabled t8k-backup.timer >/dev/null 2>&1 && systemctl disable t8k-backup.timer
+  [ -f "$SYSTEMD_DIR/t8k-backup.timer" ] || [ -f "$SYSTEMD_DIR/t8k-backup.service" ] && rm -f "$SYSTEMD_DIR/t8k-backup"*
+  systemctl is-active t8k-mysql-backup.timer >/dev/null 2>&1 && systemctl stop t8k-mysql-backup.timer
+  systemctl is-enabled t8k-mysql-backup.timer >/dev/null 2>&1 && systemctl disable t8k-mysql-backup.timer
+  systemctl is-active t8k-mysql-backup-weekly.timer >/dev/null 2>&1 && systemctl stop t8k-mysql-backup-weekly.timer
+  systemctl is-enabled t8k-mysql-backup-weekly.timer >/dev/null 2>&1 && systemctl disable t8k-mysql-backup-weekly.timer
+  [ -f "$SYSTEMD_DIR/t8k-mysql-backup.timer" ] || [ -f "$SYSTEMD_DIR/t8k-mysql-backup-weekly.timer" ] && rm -f "$SYSTEMD_DIR/t8k-mysql-backup"*
+  [ -f "$RSNAPSHOT_CONF" ] && rm -f "$RSNAPSHOT_CONF"
 fi
 
 echo ""
 echo "Removing B2 sync systemd units"
 if [ "$ENHANCED_BACKUPS" = true ]; then
-  systemctl stop t8k-b2sync-hourly.timer
-  systemctl disable t8k-b2sync-hourly.timer
-  systemctl stop t8k-b2sync-daily.timer
-  systemctl disable t8k-b2sync-daily.timer
-  systemctl stop t8k-b2sync-weekly.timer
-  systemctl disable t8k-b2sync-weekly.timer
-  systemctl stop t8k-b2sync-monthly.timer
-  systemctl disable t8k-b2sync-monthly.timer
-  rm -f /etc/systemd/system/t8k-b2sync-hourly.service
-  rm -f /etc/systemd/system/t8k-b2sync-hourly.timer
-  rm -f /etc/systemd/system/t8k-b2sync-daily.service
-  rm -f /etc/systemd/system/t8k-b2sync-daily.timer
-  rm -f /etc/systemd/system/t8k-b2sync-weekly.service
-  rm -f /etc/systemd/system/t8k-b2sync-weekly.timer
-  rm -f /etc/systemd/system/t8k-b2sync-monthly.service
-  rm -f /etc/systemd/system/t8k-b2sync-monthly.timer
+  systemctl is-active t8k-b2sync-hourly.timer >/dev/null 2>&1 && systemctl stop t8k-b2sync-hourly.timer
+  systemctl is-enabled t8k-b2sync-hourly.timer >/dev/null 2>&1 && systemctl disable t8k-b2sync-hourly.timer
+  systemctl is-active t8k-b2sync-daily.timer >/dev/null 2>&1 && systemctl stop t8k-b2sync-daily.timer
+  systemctl is-enabled t8k-b2sync-daily.timer >/dev/null 2>&1 && systemctl disable t8k-b2sync-daily.timer
+  systemctl is-active t8k-b2sync-weekly.timer >/dev/null 2>&1 && systemctl stop t8k-b2sync-weekly.timer
+  systemctl is-enabled t8k-b2sync-weekly.timer >/dev/null 2>&1 && systemctl disable t8k-b2sync-weekly.timer
+  systemctl is-active t8k-b2sync-monthly.timer >/dev/null 2>&1 && systemctl stop t8k-b2sync-monthly.timer
+  systemctl is-enabled t8k-b2sync-monthly.timer >/dev/null 2>&1 && systemctl disable t8k-b2sync-monthly.timer
+  [ -f "$SYSTEMD_DIR/t8k-b2sync-hourly.service" ] || [ -f "$SYSTEMD_DIR/t8k-b2sync-hourly.timer" ] && rm -f "$SYSTEMD_DIR/t8k-b2sync-hourly"*
+  [ -f "$SYSTEMD_DIR/t8k-b2sync-daily.service" ] || [ -f "$SYSTEMD_DIR/t8k-b2sync-daily.timer" ] && rm -f "$SYSTEMD_DIR/t8k-b2sync-daily"*
+  [ -f "$SYSTEMD_DIR/t8k-b2sync-weekly.service" ] || [ -f "$SYSTEMD_DIR/t8k-b2sync-weekly.timer" ] && rm -f "$SYSTEMD_DIR/t8k-b2sync-weekly"*
+  [ -f "$SYSTEMD_DIR/t8k-b2sync-monthly.service" ] || [ -f "$SYSTEMD_DIR/t8k-b2sync-monthly.timer" ] && rm -f "$SYSTEMD_DIR/t8k-b2sync-monthly"*
 else
-  systemctl stop t8k-b2sync-daily.timer
-  systemctl disable t8k-b2sync-daily.timer
-  rm -f /etc/systemd/system/t8k-b2sync-daily.service
-  rm -f /etc/systemd/system/t8k-b2sync-daily.timer
+  systemctl is-active t8k-b2sync-daily.timer >/dev/null 2>&1 && systemctl stop t8k-b2sync-daily.timer
+  systemctl is-enabled t8k-b2sync-daily.timer >/dev/null 2>&1 && systemctl disable t8k-b2sync-daily.timer
+  [ -f "$SYSTEMD_DIR/t8k-b2sync-daily.service" ] || [ -f "$SYSTEMD_DIR/t8k-b2sync-daily.timer" ] && rm -f "$SYSTEMD_DIR/t8k-b2sync-daily"*
 fi
 
 echo ""
 echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
-rm /etc/nginx/sites-available/storykeep."$NAME".conf
-rm /etc/nginx/sites-available/t8k."$NAME".conf
-rm /etc/nginx/sites-enabled/storykeep."$NAME".conf
-rm /etc/nginx/sites-enabled/t8k."$NAME".conf
-if ! nginx -t 2>/dev/null; then
-  echo ""
-  echo Fatal Error removing Nginx config! UNSAFE CONFIG!!!
-  echo ""
+[ -f "$NGINX_SITES_AVAIL/storykeep.$NAME.conf" ] && rm "$NGINX_SITES_AVAIL/storykeep.$NAME.conf"
+[ -f "$NGINX_SITES_AVAIL/t8k.$NAME.conf" ] && rm "$NGINX_SITES_AVAIL/t8k.$NAME.conf"
+[ -f "$NGINX_SITES_ENAB/storykeep.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/storykeep.$NAME.conf"
+[ -f "$NGINX_SITES_ENAB/t8k.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/t8k.$NAME.conf"
+nginx -t 2>/dev/null || {
+  echo "Fatal Error removing Nginx config! UNSAFE CONFIG!!!"
   exit 1
-fi
+}
 
 echo ""
 echo Disable log rotation
-rm /etc/logrotate.d/nginx."$NAME"
+[ -f "$LOGROTATE_DIR/nginx.$NAME" ] && rm "$LOGROTATE_DIR/nginx.$NAME"
 
 echo ""
 echo Remove systemd path unit - build watch
-systemctl stop t8k-"$NAME".path
-systemctl disable t8k-"$NAME".path
-rm /etc/systemd/system/t8k-"$NAME".path
-rm /etc/systemd/system/t8k-"$NAME".service
+systemctl is-active t8k-"$NAME".path >/dev/null 2>&1 && systemctl stop t8k-"$NAME".path
+systemctl is-enabled t8k-"$NAME".path >/dev/null 2>&1 && systemctl disable t8k-"$NAME".path
+[ -f "$SYSTEMD_DIR/t8k-$NAME.path" ] && rm "$SYSTEMD_DIR/t8k-$NAME.path"
+[ -f "$SYSTEMD_DIR/t8k-$NAME.service" ] && rm "$SYSTEMD_DIR/t8k-$NAME.service"

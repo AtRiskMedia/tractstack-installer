@@ -40,6 +40,8 @@ if [ "$USER" != root ]; then
   exit 1
 fi
 
+mkdir -p /root/.ssh && ssh-keyscan -t ed25519 github.com >>/root/.ssh/known_hosts
+
 if [ "$USE_BACKUPS" = true ]; then
   # B2 Backup Configuration
   if [ ! -f /home/t8k/.env.b2 ]; then
@@ -115,10 +117,10 @@ CONCIERGE_PUBLIC_SECRET=$(</dev/urandom tr -dc A-Za-z | head -c8)
 STORYKEEP_SECRET=$(</dev/urandom tr -dc A-Za-z | head -c8)
 SECRET_KEY=$(</dev/urandom tr -dc A-Za-z | head -c22)
 
-if [ ! -f /etc/letsencrypt/live/"$NAME".tractstack.com ]; then
+if [ ! -d /etc/letsencrypt/live/"$NAME"."$BASE_URL" ]; then
   echo ""
   echo Creating a certificate
-  ./cert.sh --expand -d "$NAME".tractstack.com -d storykeep."$NAME".tractstack.com --dns-cloudflare-propagation-seconds 45
+  ./cert.sh --expand -d "$NAME"."$BASE_URL" -d storykeep."$NAME"."$BASE_URL" --dns-cloudflare-propagation-seconds 45
 fi
 
 echo "$NAME" >>/home/t8k/.env.backups
@@ -205,7 +207,7 @@ fi
 cd - >/dev/null 2>&1
 
 echo ""
-echo Creating nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
+echo Creating nginx config for "$NAME"."$BASE_URL" and storykeep."$NAME"."$BASE_URL"
 cp ../files/nginx/storykeep.conf /etc/nginx/sites-available/storykeep."$NAME".conf
 cp ../files/nginx/tractstack.conf /etc/nginx/sites-available/t8k."$NAME".conf
 sed -i -e "$SED" /etc/nginx/sites-available/storykeep."$NAME".conf
@@ -284,7 +286,7 @@ echo /home/"$NAME"/
 
 echo ""
 echo - log-in to your storykeep:
-echo https://"$NAME".tractstack.com/storykeep/login?force=true
+echo https://"$NAME"."$BASE_URL"/storykeep/login?force=true
 
 echo your initial password is: "$STORYKEEP_SECRET"
 echo ""
