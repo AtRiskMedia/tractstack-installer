@@ -114,12 +114,13 @@ echo ""
 echo Removing nginx config for "$NAME".tractstack.com and storykeep."$NAME".tractstack.com
 [ -f "$NGINX_SITES_AVAIL/storykeep.$NAME.conf" ] && rm "$NGINX_SITES_AVAIL/storykeep.$NAME.conf"
 [ -f "$NGINX_SITES_AVAIL/t8k.$NAME.conf" ] && rm "$NGINX_SITES_AVAIL/t8k.$NAME.conf"
-[ -f "$NGINX_SITES_ENAB/storykeep.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/storykeep.$NAME.conf"
-[ -f "$NGINX_SITES_ENAB/t8k.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/t8k.$NAME.conf"
+[ -L "$NGINX_SITES_ENAB/storykeep.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/storykeep.$NAME.conf"
+[ -L "$NGINX_SITES_ENAB/t8k.$NAME.conf" ] && rm "$NGINX_SITES_ENAB/t8k.$NAME.conf"
 nginx -t 2>/dev/null || {
   echo "Fatal Error removing Nginx config! UNSAFE CONFIG!!!"
   exit 1
 }
+systemctl reload nginx
 
 echo ""
 echo Disable log rotation
