@@ -60,6 +60,8 @@ if [ ! -z "$RUNNING" ]; then
   echo Stopping Docker
   docker stop "$RUNNING"
   docker rm "$RUNNING"
+  echo "Waiting for resources to be released..."
+  sleep 5
 fi
 
 echo ""
