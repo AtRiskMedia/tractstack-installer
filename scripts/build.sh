@@ -38,6 +38,7 @@ echo "{\"status\":\"building\",\"lastBuild\":$LAST_BUILD,\"now\":$NOW}" >/home/"
 blue='\033[0;34m'
 brightblue='\033[1;34m'
 white='\033[1;37m'
+green='\033[0;32m'
 reset='\033[0m'
 
 # Display ASCII art header
@@ -50,6 +51,33 @@ echo -e "${brightblue}  \__|_|  \__,_|\___|\__|${blue}___/\__\__,_|\___|_|\_\ "
 echo -e ""
 echo -e "${white}  free web press ${reset}by At Risk Media"
 echo ""
+
+# Check build.lock content and perform pulls if needed
+if [ -f /home/"$USR"/watch/build.lock ]; then
+  BUILD_TARGET=$(cat /home/"$USR"/watch/build.lock)
+
+  case "$BUILD_TARGET" in
+  "all")
+    echo -e "${green}Pulling latest changes for both concierge and storykeep...${reset}"
+    # Pull concierge
+    /home/"$USR"/scripts/pull-concierge.sh "$USR"
+    # Pull storykeep
+    /home/"$USR"/scripts/pull.sh "$USR"
+    ;;
+  "concierge")
+    echo -e "${green}Pulling latest changes for concierge only...${reset}"
+    /home/"$USR"/scripts/pull-concierge.sh "$USR"
+    ;;
+  "storykeep")
+    echo -e "${green}Pulling latest changes for storykeep only...${reset}"
+    /home/"$USR"/scripts/pull.sh "$USR"
+    ;;
+  *)
+    echo -e "No pull requested, proceeding with build only"
+    ;;
+  esac
+fi
+
 echo -e "building ${white}$SITENAME (frontend)${reset}"
 
 # Change to project directory
