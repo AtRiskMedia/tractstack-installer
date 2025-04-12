@@ -35,4 +35,5 @@ fi
 echo -e "${blue}Running as $USR${reset}"
 echo -e "${blue}Pulling latest changes for tractstack-concierge...${reset}"
 cd "/home/$USR/srv/tractstack-concierge" && git pull
+cd "/home/$USR/srv/tractstack-concierge" && composer install
 echo -e "${blue}Concierge pull complete${reset}"
