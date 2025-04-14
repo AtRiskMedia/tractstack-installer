@@ -25,6 +25,7 @@ pnpm create astro@latest tractstack-storykeep \
 touch tractstack-storykeep/public/styles/frontend.css
 echo {} >tractstack-storykeep/config/init.json
 echo {} >tractstack-storykeep/config/turso.json
+mkdir tractstack-storykeep/public/custom
 cd ~/src/
 echo Installing Code Base for easy updates
 git clone https://github.com/AtRiskMedia/tractstack-starter.git
