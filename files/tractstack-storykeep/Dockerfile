@@ -29,7 +29,7 @@ RUN pnpm build
 FROM node:20-slim AS runtime
 WORKDIR /app
 # Create necessary directories
-RUN mkdir -p /app/config /app/public/styles
+RUN mkdir -p /app/config /app/public/styles /app/.tractstack /tenants
 # Copy the build artifacts from the build stage
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/tailwind.config.cjs ./tailwind.config.cjs
