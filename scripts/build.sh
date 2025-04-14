@@ -153,7 +153,7 @@ if ! NEW_CONTAINER=$(sudo docker run \
   -v /home/$USR/src/tractstack-storykeep/public:/app/public \
   -v /home/$USR/src/tractstack-storykeep/config:/app/config \
   -v /home/$USR/src/tractstack-storykeep/.env:/app/.env \
-  -v /home/$USR/tenants:/tenants \
+  -v /home/$USR/src/tractstack-storykeep/tenants:/app/tenants \
   tractstack-storykeep-"$USR"); then
   echo "Failed to start new container"
   echo "{\"status\":\"failed\",\"lastBuild\":$NOW}" >/home/"$USR"/srv/tractstack-concierge/api/build.json

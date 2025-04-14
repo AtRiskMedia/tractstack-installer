@@ -19,12 +19,14 @@ RUN mkdir -p /app/config
 RUN openssl genrsa -des3 -passout pass:x -out server.pass.key 2048 && \
     openssl rsa -passin pass:x -in server.pass.key -out server.key && \
     rm server.pass.key && \
+    echo "[req]\ndistinguished_name=req_distinguished_name\nreq_extensions=v3_req\n[req_distinguished_name]\n[v3_req]\nsubjectAltName=DNS:ZZZZQ,DNS:*.ZZZZQ" > san.cnf && \
     openssl req -new -key server.key -out server.csr \
-        -subj "/C=UK/ST=Ontario/L=Toronto/O=AtRiskMedia/OU=TractStack/CN=ZZZZQ" && \
-    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+        -subj "/C=UK/ST=Ontario/L=Toronto/O=AtRiskMedia/OU=TractStack/CN=ZZZZQ" \
+        -config san.cnf && \
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt -extfile san.cnf -extensions v3_req && \
+    rm san.cnf server.csr
 # Build the application
 RUN pnpm build
-
 # Stage 2: Runtime stage
 FROM node:20-slim AS runtime
 WORKDIR /app
