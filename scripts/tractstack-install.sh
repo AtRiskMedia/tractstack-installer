@@ -286,8 +286,8 @@ echo SECRET_KEY="$SECRET_KEY" >>/home/"$NAME"/srv/tractstack-concierge/.env
 echo CONCIERGE_SECRET="$CONCIERGE_SECRET" >>/home/"$NAME"/srv/tractstack-concierge/.env
 echo PRIVATE_CONCIERGE_AUTH_SECRET="$CONCIERGE_SECRET" >>/home/"$NAME"/src/tractstack-storykeep/.env
 echo PUBLIC_CONCIERGE_AUTH_SECRET="$CONCIERGE_PUBLIC_SECRET" >>/home/"$NAME"/src/tractstack-storykeep/.env
-echo PRIVATE_ADMIN_PASSWORD="$STORYKEEP_SECRET" >>/home/"$NAME"/src/tractstack-storykeep/.env
-echo PRIVATE_EDITOR_PASSWORD="$STORYKEEP_SECRET" >>/home/"$NAME"/src/tractstack-storykeep/.env
+sed -i '/PRIVATE_ADMIN_PASSWORD=$/d' /home/"$NAME"/src/tractstack-storykeep/.env
+sed -i '/PRIVATE_EDITOR_PASSWORD=$/d' /home/"$NAME"/src/tractstack-storykeep/.env
 
 echo ""
 echo Running build
