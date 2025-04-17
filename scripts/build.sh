@@ -94,6 +94,14 @@ fi
 
 echo -e "building ${white}$SITENAME (frontend)${reset}"
 
+# Extract Tailwind classes
+echo -e "${green}Extracting Tailwind classes for whitelist...${reset}"
+if [ -f /home/"$USR"/scripts/extract_tailwind.py ]; then
+  echo -e "Running Tailwind extraction as $USR"
+  su - "$USR" -c "python3 /home/$USR/scripts/extract_tailwind.py"
+  echo -e "Tailwind classes extracted successfully"
+fi
+
 # Change to project directory
 cd /home/"$USR"/src/tractstack-storykeep
 
