@@ -1,9 +1,32 @@
 #!/bin/bash
 set -e # Exit on error
 
-# Handle directory change based on argument
-if [ ! -z "$1" ]; then
-  cd /home/"$1"
+# Check if parameter is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <backup_type> [user_directory]"
+  echo ""
+  echo "Backup types:"
+  echo "  all - Backup both src and srv components"
+  echo "  src - Backup only src components"
+  echo "  srv - Backup only srv components"
+  echo ""
+  echo "Optional: Specify user directory as second parameter"
+  exit 1
+fi
+
+BACKUP_TYPE="$1"
+USER_DIR="$2"
+
+# Validate backup type
+if [ "$BACKUP_TYPE" != "all" ] && [ "$BACKUP_TYPE" != "src" ] && [ "$BACKUP_TYPE" != "srv" ]; then
+  echo "ERROR: Invalid backup type '$BACKUP_TYPE'"
+  echo "Valid options: all, src, srv"
+  exit 1
+fi
+
+# Handle directory change based on second argument
+if [ ! -z "$USER_DIR" ]; then
+  cd /home/"$USER_DIR"
 else
   cd ..
 fi
@@ -41,8 +64,10 @@ find_param_dirs() {
   done
 }
 
-# Function to perform the backup
-do_backup() {
+# Function to backup src components
+backup_src() {
+  echo "Creating src backup..."
+
   # Create backup directory if it doesn't exist
   mkdir -p /home/"$USR"/backup
 
@@ -52,14 +77,13 @@ do_backup() {
   # Find param directories
   PARAM_DIRS=$(find_param_dirs)
 
-  # Find additional srv directories (excluding symlinks)
-  SRV_DIRS=$(find_srv_dirs)
-
-  # Create the backup - build tar command dynamically
-  TAR_CMD="tar -czf /home/$USR/backup/${USR}_storykeep.tar.gz"
+  # Create the src backup - build tar command dynamically
+  TAR_CMD="tar -czf /home/$USR/backup/${USR}_storykeep_src.tar.gz"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/config/*"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/custom"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/images"
+  TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/fonts"
+  TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/styles/custom.css"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/styles/app.css"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/public/styles/frontend.css"
   TAR_CMD="$TAR_CMD src/tractstack-storykeep/src/custom"
@@ -82,22 +106,64 @@ do_backup() {
     echo "Including param directories: $PARAM_DIRS"
   fi
 
-  # Add srv directories if any found
-  if [ ! -z "$SRV_DIRS" ]; then
-    TAR_CMD="$TAR_CMD $SRV_DIRS"
-    echo "Including srv directories: $SRV_DIRS"
+  # Execute the tar command
+  eval $TAR_CMD
+
+  echo "Src backup created: /home/$USR/backup/${USR}_storykeep_src.tar.gz"
+}
+
+# Function to backup srv components
+backup_srv() {
+  echo "Creating srv backup..."
+
+  # Create backup directory if it doesn't exist
+  mkdir -p /home/"$USR"/backup
+
+  # Go to project root
+  cd /home/"$USR"
+
+  # Find additional srv directories (excluding symlinks)
+  SRV_DIRS=$(find_srv_dirs)
+
+  # Check if there are srv directories to backup
+  if [ -z "$SRV_DIRS" ]; then
+    echo "No srv directories found to backup"
+    return
   fi
+
+  # Create the srv backup
+  TAR_CMD="tar -czf /home/$USR/backup/${USR}_storykeep_srv.tar.gz $SRV_DIRS"
+  echo "Including srv directories: $SRV_DIRS"
 
   # Execute the tar command
   eval $TAR_CMD
 
-  echo "Backup created: /home/$USR/backup/${USR}_storykeep.tar.gz"
+  echo "Srv backup created: /home/$USR/backup/${USR}_storykeep_srv.tar.gz"
+}
+
+# Function to perform the backup based on type
+do_backup() {
+  case "$BACKUP_TYPE" in
+  "all")
+    echo "Performing full backup (src and srv)..."
+    backup_src
+    backup_srv
+    ;;
+  "src")
+    echo "Performing src-only backup..."
+    backup_src
+    ;;
+  "srv")
+    echo "Performing srv-only backup..."
+    backup_srv
+    ;;
+  esac
 }
 
 # Check if we're running as the specified user
 if [ "$CURRENT_USER" != "$USR" ]; then
   echo "Switching to user: $USR"
-  exec su - "$USR" -c "cd /home/$USR/scripts && ./backup.sh"
+  exec su - "$USR" -c "cd /home/$USR/scripts && ./backup.sh $BACKUP_TYPE"
 else
   echo "Running as $USR"
   do_backup
